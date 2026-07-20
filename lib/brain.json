@@ -1,0 +1,64 @@
+{
+  "clinic": {
+    "name": "Imperial Care Internal Medicine",
+    "doctor": "Dr. Sumbul Islam, MD",
+    "specialty": "Internal Medicine & Primary Care",
+    "phone": "(903) 957-0417",
+    "fax": "(903) 355-2938",
+    "tagline": "Personalized, Evidence-Based Care for Your Health"
+  },
+  "locations": [
+    {
+      "name": "Collin County Location (Anna, TX)",
+      "address": "450 N Standridge Blvd, Suite 104, Anna, TX 75409, USA",
+      "status": "Now Serving Collin County! Accepting new patient appointments.",
+      "directions": "https://maps.google.com/?q=450+N+Standridge+Blvd+Suite+104+Anna+TX+75409"
+    },
+    {
+      "name": "Grayson County Location (Sherman, TX)",
+      "address": "1700 N Travis St, Sherman, Texas 75092",
+      "status": "Accepting patient appointments Monday–Friday",
+      "directions": "https://maps.google.com/?q=1700+N+Travis+St+Sherman+Texas+75092"
+    }
+  ],
+  "hours": {
+    "Monday": "8:00 AM – 5:00 PM",
+    "Tuesday": "8:00 AM – 5:00 PM",
+    "Wednesday": "8:00 AM – 5:00 PM",
+    "Thursday": "8:00 AM – 5:00 PM",
+    "Friday": "Telephone appointments upon request",
+    "Saturday": "Closed",
+    "Sunday": "Closed"
+  },
+  "services": [
+    {
+      "name": "Primary Care & Adult Physical Exams",
+      "description": "Comprehensive adult wellness checks, chronic disease management (hypertension, diabetes, cholesterol), preventative care, and new symptom evaluation."
+    },
+    {
+      "name": "Semaglutide Weight Loss Program",
+      "description": "Compounded subcutaneous once-weekly weight loss injection. Benefits include promoting fat burning, improving blood sugar, lowering A1C, lowering BMI, and reducing glucose. Average loss 2-4 lbs/week with diet/exercise. Process: Consult -> NP/Doctor review -> Prescription."
+    },
+    {
+      "name": "Vitamin B12 Injections",
+      "description": "Vitality injection boosting red blood cell formation, preventing anemia, improving mood, energy, and brain health. Helps older adults, vegans, Metformin users, and PPI users. Treats symptoms like fatigue, pins & needles, sore tongue, and muscle weakness."
+    }
+  ],
+  "staff": [
+    { "name": "Dr. Sumbul Islam, MD", "role": "Internal Medicine Physician" },
+    { "name": "Kelly", "role": "Front Desk & Patient Relations" },
+    { "name": "Peggy, LVN", "role": "Licensed Vocational Nurse" },
+    { "name": "LESA", "role": "Practice Manager / Care Administrator" }
+  ],
+  "forms": [
+    { "name": "Semaglutide — Weight Loss Tracker", "type": "PDF" },
+    { "name": "My Progress Tracker", "type": "PDF" },
+    { "name": "Semaglutide / BPC-157 Consent Form", "type": "PDF" },
+    { "name": "New Patient Questionnaire 2025", "type": "PDF" }
+  ],
+  "policies": {
+    "no_medical_advice": "We cannot provide medical advice, diagnosis, or emergency care through chat or email forms. For emergencies call 911 immediately.",
+    "privacy": "Strict compliance with HIPAA patient privacy standards.",
+    "sms": "Opt-in text messaging for appointment reminders. Reply STOP to opt-out, HELP for assistance."
+  }
+}
