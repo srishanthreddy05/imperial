@@ -10,7 +10,8 @@ import {
   Send,
   CheckCircle2,
   AlertTriangle,
-  MessageSquare
+  MessageSquare,
+  MessageCircle
 } from "lucide-react";
 
 export default function ContactPage() {
@@ -193,6 +194,21 @@ export default function ContactPage() {
                       <strong className="block text-gray-900 font-semibold">Main Phone Line:</strong>
                       <a href="tel:9039570417" className="text-[#005EB8] font-bold hover:underline">
                         (903) 957-0417
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <MessageCircle className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />
+                    <div>
+                      <strong className="block text-gray-900 font-semibold">WhatsApp Chat:</strong>
+                      <a
+                        href="https://wa.me/19592824133"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-green-600 font-bold hover:underline"
+                      >
+                        +1 (959) 282-4133
                       </a>
                     </div>
                   </div>

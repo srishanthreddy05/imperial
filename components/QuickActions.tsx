@@ -55,7 +55,7 @@ export default function QuickActions() {
       id: 'whatsapp',
       icon: MessageCircle,
       label: 'WhatsApp',
-      href: 'https://wa.me/19039570417',
+      href: 'https://wa.me/19592824133',
       external: true,
       color: 'bg-green-500 hover:bg-green-600',
       borderColor: 'border-l-green-500'

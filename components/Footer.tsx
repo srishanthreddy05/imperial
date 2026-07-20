@@ -7,7 +7,8 @@ import {
   Clock,
   Mail,
   Shield,
-  AlertTriangle
+  AlertTriangle,
+  MessageCircle
 } from "lucide-react";
 
 export default function Footer() {
@@ -158,6 +159,21 @@ export default function Footer() {
                     Phone: (903) 957-0417
                   </a>
                   <span className="block text-xs text-gray-400">Fax: (903) 355-2938</span>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-3">
+                <MessageCircle className="w-4 h-4 text-green-400 shrink-0 mt-0.5" />
+                <div>
+                  <span className="block font-semibold text-white">WhatsApp</span>
+                  <a
+                    href="https://wa.me/19592824133"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-green-400 font-semibold"
+                  >
+                    +1 (959) 282-4133
+                  </a>
                 </div>
               </div>
 
