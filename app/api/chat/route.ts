@@ -1,111 +1,253 @@
-import { NextRequest, NextResponse } from 'next/server';
-import brainFile from '@/lib/brain.json';
+import { randomUUID } from "crypto";
+import { NextRequest, NextResponse } from "next/server";
+import {
+  buildReceptionistMessages,
+  clearCallbackState,
+  extractPatientMemory,
+  getFallbackReceptionistReply,
+  hasAllPatientDetails,
+  isValidEmail,
+  isValidPhone,
+  isEmergencyMessage,
+  isCallbackCancellation,
+  isLikelyCallbackResponse,
+  isLikelyNewQuestion,
+  shouldOfferCallback,
+  type ChatMessage,
+  type PatientMemory,
+} from "@/lib/chat/receptionist";
+import {
+  CALLBACK_DETAILS_REQUEST,
+  CALLBACK_DETAILS_REMINDER,
+  CALLBACK_CANCELLED_MESSAGE,
+  CALLBACK_SUBMITTED_MESSAGE,
+  EMERGENCY_MESSAGE,
+  INITIAL_RECEPTIONIST_MESSAGE,
+  OFFER_CALLBACK_MESSAGE,
+} from "@/lib/chat/receptionistMessages";
+import { sendCallbackRequestEmail } from "@/lib/email/callbackRequest";
+import { getCallbackRequest, saveCallbackRequest, markCallbackRequestEmailSent } from "@/lib/firestore/callbackRequests";
+import {
+  getAIConversation,
+  markAIConversationCallbackSubmitted,
+  saveAIConversation,
+  type AIConversationDocument,
+} from "@/lib/firestore/aiConversations";
+import { callGroqChat, hasGroqApiKey } from "@/lib/groq/client";
+import { generateCallbackSummary } from "@/lib/summary/callbackSummary";
 
-const SYSTEM_PROMPT = `You are the AI assistant for Imperial Care Internal Medicine, a primary care practice led by Dr. Sumbul Islam, MD, serving adults in Anna, TX and Sherman, TX.
-
-YOUR ROLE:
-- Answer questions about the practice, services, locations, hours, and staff
-- Help patients understand what services are offered
-- Guide patients on how to schedule appointments
-- Provide general information about Semaglutide and B12 injections (NOT medical advice)
-
-CRITICAL RULES:
-1. NEVER provide medical advice, diagnosis, or treatment recommendations
-2. ALWAYS direct medical questions to: "Please call us at (903) 957-0417 or schedule an appointment with Dr. Islam for personalized medical advice."
-3. For emergencies, ALWAYS say: "If this is a medical emergency, please call 911 immediately."
-4. Keep responses friendly, professional, and under 150 words
-5. Use ONLY the clinic data provided — do not make up information
-6. If you don't know something, say: "I'd recommend calling us at (903) 957-0417 for the most up-to-date information."
-7. Protect patient privacy — remind users not to share personal health information (PHI) in chat
-8. Do not discuss pricing or insurance specifics — direct to phone call
-9. Be empathetic but maintain professional boundaries
-
-CLINIC DATA:`;
+interface IncomingHistoryMessage {
+  role?: unknown;
+  content?: unknown;
+}
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { message, history = [] } = body;
+    const body = (await request.json()) as {
+      message?: unknown;
+      history?: IncomingHistoryMessage[];
+      conversationId?: unknown;
+      action?: unknown;
+    };
+    const message = typeof body.message === "string" ? body.message.replace(/[<>]/g, "").trim() : "";
+    const action = body.action === "request_callback" ? "request_callback" : undefined;
 
-    // Validate
-    if (!message || typeof message !== 'string' || message.length > 500) {
-      return NextResponse.json(
-        { error: 'Invalid message' },
-        { status: 400 }
-      );
+    if ((!message && !action) || message.length > 500) {
+      return NextResponse.json({ error: "Invalid message" }, { status: 400 });
     }
 
-    // Sanitize
-    const sanitizedMessage = message.replace(/[<>]/g, '').trim();
+    const conversationId =
+      typeof body.conversationId === "string" && body.conversationId.trim() !== ""
+        ? body.conversationId.trim()
+        : randomUUID();
+    const existingConversation = await getAIConversation(conversationId);
+    const previousMessages = getPreviousMessages(existingConversation, body.history);
+    const messagesWithUser = message
+      ? [...previousMessages, { role: "user" as const, content: message, timestamp: new Date().toISOString() }]
+      : previousMessages;
+    const memory = extractPatientMemory(messagesWithUser, getExistingMemory(existingConversation));
+    if (action === "request_callback") {
+      memory.callbackRequested = true;
+      memory.intakeMode = true;
+      memory.callbackState = "CALLBACK_COLLECTING";
+    }
 
-    // Check if GROK_API_KEY is configured
-    const apiKey = process.env.GROK_API_KEY;
-    if (!apiKey || apiKey === 'your_grok_api_key_here') {
-      // Intelligent fallback answer based on brain.json if API key is not yet set
-      const lower = sanitizedMessage.toLowerCase();
-      let fallbackReply = "Thank you for reaching out to Imperial Care Internal Medicine! We serve patients in Anna, TX (450 N Standridge Blvd #104) and Sherman, TX (1700 N Travis St). For appointments or inquiries, please call us at (903) 957-0417.";
+    let reply: string;
+    let callbackOffer = false;
+    const callbackAlreadySubmitted = Boolean(existingConversation?.callbackSubmitted || memory.callbackSubmitted);
+    const callbackActive = Boolean(memory.callbackRequested && !callbackAlreadySubmitted);
 
-      if (lower.includes("hour") || lower.includes("open") || lower.includes("time")) {
-        fallbackReply = "Our clinic hours are Monday through Thursday from 8:00 AM to 5:00 PM. Fridays are reserved for telephone appointments upon request. We are closed Saturday & Sunday. Please call (903) 957-0417 to schedule!";
-      } else if (lower.includes("weight") || lower.includes("semaglutide") || lower.includes("diet")) {
-        fallbackReply = "We offer a physician-supervised Semaglutide Weight Loss Program! It is a 1x weekly subcutaneous injection designed to promote fat burning, lower A1C, and reduce BMI. Call us at (903) 957-0417 to schedule a consultation with Dr. Islam.";
-      } else if (lower.includes("b12") || lower.includes("vitamin") || lower.includes("energy") || lower.includes("fatigue")) {
-        fallbackReply = "We provide Vitamin B12 vitality injections to boost energy, red blood cell formation, and support brain/bone health. Perfect for older adults, Metformin users, and those with chronic fatigue. Call (903) 957-0417 to book!";
-      } else if (lower.includes("location") || lower.includes("anna") || lower.includes("sherman") || lower.includes("address")) {
-        fallbackReply = "We have two convenient locations: Anna Clinic in Collin County (450 N Standridge Blvd, Suite 104, Anna, TX 75409) and Sherman Clinic in Grayson County (1700 N Travis St, Sherman, TX 75092). Call (903) 957-0417 for directions or appointments.";
-      } else if (lower.includes("emergency") || lower.includes("pain") || lower.includes("chest") || lower.includes("911")) {
-        fallbackReply = "If this is a medical emergency, please call 911 immediately. For non-emergency care, please call our office at (903) 957-0417.";
+    if (callbackActive && isCallbackCancellation(message)) {
+      const clearedMemory = clearCallbackState(memory);
+      reply = CALLBACK_CANCELLED_MESSAGE;
+      const finalMessages = [...messagesWithUser, { role: "assistant" as const, content: reply, timestamp: new Date().toISOString() }];
+      await saveAIConversation(conversationId, finalMessages, clearedMemory, existingConversation);
+
+      return NextResponse.json({
+        reply,
+        conversationId,
+        callbackSubmitted: false,
+        callbackOffer: false,
+      });
+    }
+
+    if (callbackActive && isLikelyNewQuestion(message) && !isLikelyCallbackResponse(message)) {
+      memory.callbackState = "GENERAL_CHAT";
+      reply = await getReceptionistReply(messagesWithUser, memory, message);
+      const finalMessages = [...messagesWithUser, { role: "assistant" as const, content: reply, timestamp: new Date().toISOString() }];
+      await saveAIConversation(conversationId, finalMessages, memory, existingConversation);
+
+      return NextResponse.json({
+        reply,
+        conversationId,
+        callbackSubmitted: false,
+        callbackOffer: false,
+      });
+    }
+
+    if (isEmergencyMessage(message)) {
+      reply = EMERGENCY_MESSAGE;
+    } else if (action === "request_callback" && !callbackAlreadySubmitted) {
+      reply = CALLBACK_DETAILS_REQUEST;
+      memory.detailsRequested = true;
+      memory.callbackState = "CALLBACK_COLLECTING";
+    } else if (memory.callbackRequested && !callbackAlreadySubmitted) {
+      if (!hasAllPatientDetails(memory) || !isValidEmail(memory.email) || !isValidPhone(memory.phone)) {
+        reply = memory.detailsRequested ? CALLBACK_DETAILS_REMINDER : CALLBACK_DETAILS_REQUEST;
+        memory.detailsRequested = true;
+        memory.callbackState = "CALLBACK_COLLECTING";
+      } else {
+        const requestedAt = new Date().toISOString();
+        const requestId = existingConversation?.callbackRequestId || conversationId;
+        const existingCallbackRequest = await getCallbackRequest(requestId);
+        const summary = await generateCallbackSummary(messagesWithUser);
+        if (!existingCallbackRequest) {
+          await saveCallbackRequest({
+            requestId,
+            patientName: memory.patientName || "",
+            phone: memory.phone || "",
+            email: memory.email || "",
+            preferredCallbackTime: memory.preferredCallbackTime || "",
+            conversation: messagesWithUser,
+            conversationSummary: summary,
+            status: "new",
+            callbackRequested: true,
+            emailSent: false,
+            createdAt: requestedAt,
+          });
+        }
+
+        if (!existingCallbackRequest?.emailSent) {
+          await sendCallbackRequestEmail({
+            patientName: memory.patientName || "",
+            phone: memory.phone || "",
+            email: memory.email || "",
+            preferredCallbackTime: memory.preferredCallbackTime || "",
+            summary,
+            conversation: messagesWithUser,
+            requestedAt: existingCallbackRequest?.createdAt || requestedAt,
+          });
+          await markCallbackRequestEmailSent(requestId);
+        }
+
+        memory.callbackSubmitted = true;
+        memory.emailSent = true;
+        memory.callbackState = "CALLBACK_COMPLETED";
+        reply = CALLBACK_SUBMITTED_MESSAGE;
+
+        const finalMessages = [...messagesWithUser, { role: "assistant" as const, content: reply, timestamp: new Date().toISOString() }];
+        await saveAIConversation(conversationId, finalMessages, memory, existingConversation);
+        await markAIConversationCallbackSubmitted(conversationId, requestId);
+
+        return NextResponse.json({ reply, conversationId, callbackSubmitted: true, callbackOffer: false });
       }
-
-      return NextResponse.json({ reply: fallbackReply });
+    } else {
+      reply = await getReceptionistReply(messagesWithUser, memory, message);
+      callbackOffer = shouldOfferCallback(messagesWithUser, memory);
+      if (callbackOffer && !callbackAlreadySubmitted) {
+        reply = OFFER_CALLBACK_MESSAGE;
+        memory.callbackState = "CALLBACK_PENDING";
+      }
     }
 
-    // Build messages
-    const messages = [
-      {
-        role: 'system',
-        content: SYSTEM_PROMPT + '\n\n' + JSON.stringify(brainFile, null, 2)
-      },
-      ...history.slice(-10).map((h: any) => ({
-        role: h.role === 'user' ? 'user' : 'assistant',
-        content: h.content
-      })),
-      { role: 'user', content: sanitizedMessage }
-    ];
+    const finalMessages = [...messagesWithUser, { role: "assistant" as const, content: reply, timestamp: new Date().toISOString() }];
+    await saveAIConversation(conversationId, finalMessages, memory, existingConversation);
 
-    // Call Grok API
-    const response = await fetch('https://api.x.ai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: 'grok-2',
-        messages,
-        max_tokens: 300,
-        temperature: 0.3,
-        top_p: 0.9
-      })
+    return NextResponse.json({
+      reply,
+      conversationId,
+      callbackSubmitted: callbackAlreadySubmitted || memory.callbackSubmitted,
+      callbackOffer,
     });
-
-    if (!response.ok) {
-      throw new Error(`Grok API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const reply = data.choices?.[0]?.message?.content || 
-      "I'm sorry, I couldn't process that. Please call us at (903) 957-0417.";
-
-    return NextResponse.json({ reply });
-
   } catch (error) {
-    console.error('Chat API error:', error);
+    console.error("Chat API error:", error);
     return NextResponse.json(
-      { 
-        reply: "I'm sorry, I'm having trouble right now. Please call us at (903) 957-0417 for assistance." 
+      {
+        reply: "I'm sorry, I'm having trouble right now. Please call us at (903) 957-0417 for assistance.",
       },
       { status: 500 }
     );
   }
 }
+
+function getPreviousMessages(existingConversation: AIConversationDocument | null, history?: IncomingHistoryMessage[]) {
+  if (existingConversation?.messages) return existingConversation.messages;
+
+  return (history || [])
+    .filter((message) => message.content !== INITIAL_RECEPTIONIST_MESSAGE)
+    .filter((message): message is { role: "user" | "assistant"; content: string } => {
+      return (message.role === "user" || message.role === "assistant") && typeof message.content === "string";
+    })
+    .map((message) => ({
+      role: message.role,
+      content: message.content.replace(/[<>]/g, "").trim(),
+      timestamp: new Date().toISOString(),
+    }))
+    .filter((message) => message.content !== "");
+}
+
+function getExistingMemory(existingConversation: AIConversationDocument | null): Partial<PatientMemory> | undefined {
+  if (!existingConversation) return undefined;
+
+  return {
+    patientName: existingConversation.patientName || undefined,
+    phone: existingConversation.phone || undefined,
+    email: existingConversation.email || undefined,
+    reasonForContact: existingConversation.reasonForContact || undefined,
+    symptoms: existingConversation.symptoms,
+    intakeMode: existingConversation.intakeMode,
+    detailsRequested: existingConversation.detailsRequested,
+    callbackRequested: existingConversation.callbackRequested,
+    callbackSubmitted: existingConversation.callbackSubmitted,
+    emailSent: existingConversation?.emailSent,
+    preferredCallbackTime: existingConversation?.preferredCallbackTime || undefined,
+    callbackState:
+      existingConversation.callbackState ||
+      (existingConversation.callbackSubmitted
+        ? "CALLBACK_COMPLETED"
+        : existingConversation.callbackRequested
+          ? existingConversation.detailsRequested
+            ? "CALLBACK_COLLECTING"
+            : "CALLBACK_PENDING"
+          : "GENERAL_CHAT"),
+  };
+}
+
+async function getReceptionistReply(messages: ChatMessage[], memory: PatientMemory, userMessage: string) {
+  if (!hasGroqApiKey()) {
+    return getFallbackReceptionistReply(userMessage);
+  }
+
+  try {
+    const reply = await callGroqChat(buildReceptionistMessages(messages, memory), {
+      maxTokens: 300,
+      temperature: 0.3,
+    });
+
+    return reply || getFallbackReceptionistReply(userMessage);
+  } catch (error) {
+    console.error("Groq receptionist reply error:", error);
+    return getFallbackReceptionistReply(userMessage);
+  }
+}
+

@@ -33,7 +33,7 @@ export interface BrainFile {
   services: {
     name: string;
     description: string;
-    [key: string]: any;
+    [key: string]: unknown;
   }[];
   staff: { name: string; role: string }[];
   forms: { name: string; type: string }[];

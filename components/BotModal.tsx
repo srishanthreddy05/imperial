@@ -1,46 +1,40 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { X, Send, Bot, User } from 'lucide-react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { X, Send, Bot, User, PhoneCall } from 'lucide-react';
 import { Message } from '@/types/chat';
+import { INITIAL_RECEPTIONIST_MESSAGE } from '@/lib/chat/receptionistMessages';
 
 interface BotModalProps {
   isOpen: boolean;
   onClose: () => void;
+  initialCallbackRequested?: boolean;
 }
 
-export default function BotModal({ isOpen, onClose }: BotModalProps) {
+export default function BotModal({ isOpen, onClose, initialCallbackRequested = false }: BotModalProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'welcome',
       role: 'assistant',
-      content: "Hi! I'm the Imperial Care assistant. I can help you with questions about our services, locations, hours, and more. How can I help you today?",
+      content: INITIAL_RECEPTIONIST_MESSAGE,
       timestamp: getCurrentTime()
     }
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [showCallbackPrompt, setShowCallbackPrompt] = useState(false);
+  const [callbackStarted, setCallbackStarted] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const initialCallbackSentRef = useRef(false);
 
   // Auto-scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
 
-  // Focus input when modal opens
-  useEffect(() => {
-    if (isOpen) {
-      setTimeout(() => inputRef.current?.focus(), 300);
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => { document.body.style.overflow = ''; };
-  }, [isOpen]);
-
-  const handleSend = async () => {
-    const text = input.trim();
+  const sendMessage = useCallback(async (text: string, action?: 'request_callback') => {
     if (!text || isTyping) return;
 
     // Add user message
@@ -53,12 +47,18 @@ export default function BotModal({ isOpen, onClose }: BotModalProps) {
     setMessages(prev => [...prev, userMsg]);
     setInput('');
     setIsTyping(true);
+    if (action === 'request_callback') {
+      setShowCallbackPrompt(false);
+      setCallbackStarted(true);
+    }
 
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          conversationId,
+          action,
           message: text,
           history: messages.slice(-10).map(m => ({
             role: m.role,
@@ -70,6 +70,13 @@ export default function BotModal({ isOpen, onClose }: BotModalProps) {
       if (!response.ok) throw new Error('API error');
 
       const data = await response.json();
+      if (typeof data.conversationId === 'string') {
+        setConversationId(data.conversationId);
+      }
+      setShowCallbackPrompt(Boolean(data.callbackOffer));
+      if (data.callbackSubmitted) {
+        setCallbackStarted(false);
+      }
 
       const botMsg: Message = {
         id: (Date.now() + 1).toString(),
@@ -79,7 +86,7 @@ export default function BotModal({ isOpen, onClose }: BotModalProps) {
       };
       setMessages(prev => [...prev, botMsg]);
 
-    } catch (error) {
+    } catch {
       const errorMsg: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
@@ -90,7 +97,41 @@ export default function BotModal({ isOpen, onClose }: BotModalProps) {
     } finally {
       setIsTyping(false);
     }
+  }, [conversationId, isTyping, messages]);
+
+  const handleSend = async () => {
+    await sendMessage(input.trim());
   };
+
+  const handleRequestCallback = useCallback(async () => {
+    await sendMessage('Request a Callback', 'request_callback');
+  }, [sendMessage]);
+
+  const handleContinueChat = useCallback(() => {
+    setShowCallbackPrompt(false);
+  }, []);
+
+  const handleClose = useCallback(() => {
+    setShowCallbackPrompt(false);
+    setCallbackStarted(false);
+    onClose();
+  }, [onClose]);
+
+  // Focus input when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setTimeout(() => inputRef.current?.focus(), 300);
+      document.body.style.overflow = 'hidden';
+      if (initialCallbackRequested && !initialCallbackSentRef.current) {
+        initialCallbackSentRef.current = true;
+        setTimeout(() => handleRequestCallback(), 200);
+      }
+    } else {
+      initialCallbackSentRef.current = false;
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [isOpen, initialCallbackRequested, handleRequestCallback]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -106,7 +147,7 @@ export default function BotModal({ isOpen, onClose }: BotModalProps) {
       {/* Overlay */}
       <div 
         className="fixed inset-0 bg-black/30 backdrop-blur-xs z-[9998] animate-fade-in"
-        onClick={onClose}
+        onClick={handleClose}
       />
 
       {/* Modal */}
@@ -127,7 +168,7 @@ export default function BotModal({ isOpen, onClose }: BotModalProps) {
             </div>
           </div>
           <button 
-            onClick={onClose}
+            onClick={handleClose}
             className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
             aria-label="Close chat"
           >
@@ -155,7 +196,7 @@ export default function BotModal({ isOpen, onClose }: BotModalProps) {
                 </div>
                 
                 {/* Bubble */}
-                <div className={`px-4 py-3 rounded-2xl text-xs sm:text-sm leading-relaxed ${
+                <div className={`px-4 py-3 rounded-2xl text-xs sm:text-sm leading-relaxed whitespace-pre-wrap ${
                   msg.role === 'user' 
                     ? 'bg-[#005EB8] text-white rounded-br-xs' 
                     : 'bg-white text-gray-800 rounded-bl-xs shadow-xs border border-gray-100'
@@ -186,6 +227,33 @@ export default function BotModal({ isOpen, onClose }: BotModalProps) {
 
         {/* Input */}
         <div className="px-4 py-3 border-t border-gray-200 bg-white shrink-0">
+          {showCallbackPrompt && !callbackStarted && (
+            <div className="mb-3 rounded-2xl border border-[#005EB8]/15 bg-[#005EB8]/5 p-3">
+              <p className="text-xs text-gray-700 leading-relaxed">
+                It sounds like one of our reception team members would be the best person to help you further.
+              </p>
+              <p className="mt-1 text-xs font-medium text-gray-900">Would you like me to arrange a callback for you?</p>
+              <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={handleRequestCallback}
+                  disabled={isTyping}
+                  className="rounded-xl bg-[#005EB8] px-3 py-2 text-xs font-bold text-white hover:bg-[#004B93] disabled:opacity-50 flex items-center justify-center gap-2 transition-colors"
+                >
+                  <PhoneCall size={15} />
+                  Yes, Request Callback
+                </button>
+                <button
+                  type="button"
+                  onClick={handleContinueChat}
+                  disabled={isTyping}
+                  className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 disabled:opacity-50 transition-colors"
+                >
+                  Continue Chat
+                </button>
+              </div>
+            </div>
+          )}
           <div className="flex gap-2">
             <input
               ref={inputRef}
