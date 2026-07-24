@@ -23,7 +23,6 @@ export default function Navbar({ onOpenAppointmentModal }: NavbarProps) {
     { name: "Forms", href: "/forms" },
     { name: "Gallery", href: "/gallery" },
     { name: "Reviews", href: "/reviews" },
-    { name: "Contact", href: "/contact" },
   ];
 
   return (

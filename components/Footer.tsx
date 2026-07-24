@@ -136,11 +136,6 @@ export default function Footer() {
                   Patient Reviews
                 </Link>
               </li>
-              <li>
-                <Link href="/contact" className="hover:text-[#00A9CE] transition-colors">
-                  Contact Us
-                </Link>
-              </li>
             </ul>
           </div>
 
