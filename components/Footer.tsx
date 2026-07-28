@@ -16,7 +16,7 @@ export default function Footer() {
     <footer className="bg-[#2D3436] text-gray-300 pt-16 pb-8 border-t-4 border-[#005EB8]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-gray-700">
-          
+
           {/* Column 1: Brand & Bio */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
@@ -38,7 +38,7 @@ export default function Footer() {
                 </span>
               </div>
             </div>
-            
+
             <p className="text-sm text-gray-400 leading-relaxed">
               Personalized, evidence-based care for adult health led by Dr. Sumbul Islam, MD. Dedicated to serving patients across Collin & Grayson Counties with excellence and compassion.
             </p>
@@ -144,7 +144,7 @@ export default function Footer() {
             <h3 className="text-white font-semibold text-base mb-4 tracking-wide border-l-2 border-[#00A9CE] pl-3">
               Contact & Locations
             </h3>
-            
+
             <div className="space-y-4 text-sm">
               <div className="flex items-start space-x-3">
                 <Phone className="w-4 h-4 text-[#FF6B6B] shrink-0 mt-0.5" />
@@ -157,20 +157,7 @@ export default function Footer() {
                 </div>
               </div>
 
-              <div className="flex items-start space-x-3">
-                <MessageCircle className="w-4 h-4 text-green-400 shrink-0 mt-0.5" />
-                <div>
-                  <span className="block font-semibold text-white">WhatsApp</span>
-                  <a
-                    href="https://wa.me/19592824133"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-green-400 font-semibold"
-                  >
-                    +1 (959) 282-4133
-                  </a>
-                </div>
-              </div>
+
 
               <div className="flex items-start space-x-3">
                 <MapPin className="w-4 h-4 text-[#00A9CE] shrink-0 mt-0.5" />
@@ -199,7 +186,7 @@ export default function Footer() {
             <h3 className="text-white font-semibold text-base mb-4 tracking-wide border-l-2 border-[#00A9CE] pl-3">
               Office Hours
             </h3>
-            
+
             <div className="bg-gray-800/60 p-3.5 rounded-lg border border-gray-700 text-xs space-y-1.5 mb-4">
               <div className="flex justify-between">
                 <span>Monday – Thursday:</span>
