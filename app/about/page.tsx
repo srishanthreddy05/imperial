@@ -29,14 +29,32 @@ export default function AboutPage() {
       initials: "SI",
       color: "bg-[#005EB8]",
       bio: "Dr. Islam is a dedicated internal medicine physician committed to delivering comprehensive, evidence-based care to adults. With extensive training in diagnostic medicine, chronic disease management, and preventative wellness, she empowers patients to actively participate in their health journey.",
-      credentials: ["Board Certified Internal Medicine", "MD Degree", "Adult Wellness & Chronic Disease Specialist"],
+      credentials: ["MD Degree", "Adult Wellness & Chronic Disease Specialist"],
+    },
+    {
+      name: "Tiffany",
+      title: "Nurse",
+      badge: "Nurse",
+      initials: "T",
+      color: "bg-[#005EB8]",
+      bio: "Tiffany provides dedicated clinical nursing support, patient evaluations, and compassionate care alongside Dr. Islam.",
+      credentials: ["Nurse", "Clinical Nursing Support", "Patient Care"],
+    },
+    {
+      name: "Makinzie",
+      title: "MA",
+      badge: "MA",
+      initials: "M",
+      color: "bg-[#00A9CE]",
+      bio: "Makinzie serves as Medical Assistant, assisting with patient intake, vitals, clinical prep, and day-to-day patient support.",
+      credentials: ["MA", "Medical Assistant", "Clinical Intake & Vitals"],
     },
     {
       name: "Kelly",
       title: "Front Desk & Patient Relations Specialist",
       badge: "Front Desk",
       initials: "K",
-      color: "bg-[#00A9CE]",
+      color: "bg-teal-600",
       bio: "Kelly greets every patient with warmth and ensures seamless intake, appointment scheduling, and front-desk support at our clinic locations.",
       credentials: ["Patient Scheduling", "Intake Coordination", "Insurance Verification"],
     },
@@ -94,7 +112,7 @@ export default function AboutPage() {
               </p>
 
               <p className="text-gray-600 leading-relaxed">
-                We understand that no two patients are identical. Whether you are managing complex chronic conditions such as diabetes or hypertension, seeking weight loss solutions through our Semaglutide program, or looking to maintain lifelong vitality with regular checkups, we tailor every diagnostic and treatment plan to your unique body and lifestyle.
+                Whether you are managing chronic conditions such as diabetes or hypertension, seeking Weight Loss Management with Tirzepatide along with Semaglutide compound shots, or looking to maintain lifelong vitality with regular checkups, we tailor every diagnostic and treatment plan to your unique body and lifestyle.
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
@@ -133,6 +151,12 @@ export default function AboutPage() {
                     Dr. Sumbul Islam, MD
                   </span>
                   <span className="bg-white text-gray-800 text-xs font-semibold px-3 py-1 rounded-full border border-gray-200">
+                    Tiffany (Nurse)
+                  </span>
+                  <span className="bg-white text-gray-800 text-xs font-semibold px-3 py-1 rounded-full border border-gray-200">
+                    Makinzie (MA)
+                  </span>
+                  <span className="bg-white text-gray-800 text-xs font-semibold px-3 py-1 rounded-full border border-gray-200">
                     Kelly (Front Desk)
                   </span>
                   <span className="bg-white text-gray-800 text-xs font-semibold px-3 py-1 rounded-full border border-gray-200">
@@ -159,7 +183,7 @@ export default function AboutPage() {
             <p className="text-sm text-gray-600">Dedicated professionals committed to your long-term health and wellbeing.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {teamMembers.map((member) => (
               <div
                 key={member.name}

@@ -168,19 +168,19 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      {/* SECTION 2: SEMAGLUTIDE WEIGHT LOSS PROGRAM */}
+      {/* SECTION 2: WEIGHT LOSS MANAGEMENT */}
       <section id="semaglutide" className="py-20 bg-gray-50 border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
             <span className="bg-[#00A9CE]/20 text-[#00A9CE] border border-[#00A9CE]/30 text-xs font-bold px-3.5 py-1 rounded-full uppercase tracking-wider">
-              Compounded Weight Management
+              Weight Loss Management
             </span>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
-              Semaglutide Weight Loss Program
+              Weight Loss Management
             </h2>
-            <p className="text-base text-gray-600">
-              A breakthrough, evidence-based solution for rapid, sustained weight management supervised by Dr. Sumbul Islam, MD.
+            <p className="text-base text-gray-700 font-semibold">
+              Tirzepatide along with Semaglutide compound shots for weight loss.
             </p>
           </div>
 

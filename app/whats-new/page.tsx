@@ -145,6 +145,9 @@ export default function WhatsNewPage() {
                             <br />
                             Anna, TX 75409
                           </p>
+                          <p className="mt-1 text-xs font-semibold text-[#005EB8]">
+                            By appointment only — alternating Fridays
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -193,11 +196,11 @@ export default function WhatsNewPage() {
                   Medical Weight Loss
                 </Badge>
                 <h2 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
-                  Semaglutide Weight Loss Program
+                  Weight Loss Management
                 </h2>
                 <div className="space-y-4 max-w-3xl text-base leading-7 text-slate-600">
                   <p>
-                    Semaglutide is a physician-guided medical weight loss program originally developed for diabetes management. It is now widely used to support healthy weight loss alongside diet and exercise.
+                    Tirzepatide along with Semaglutide compound shots for weight loss. Our physician-supervised program is tailored to support your personal health and weight management goals.
                   </p>
                   <p>
                     The treatment can help support appetite suppression, weight reduction, lower A1C, better blood sugar control, and a lower BMI. It is administered as weekly injections and is carefully monitored by our clinical team.

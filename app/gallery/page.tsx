@@ -21,7 +21,7 @@ const staffImages: GalleryImage[] = [
   { src: "/ICIM Photos/ICIM - Staff/KELLY - FRONT DESK RECEPTIONIST.jpeg", title: "Kelly, Front Desk Receptionist" },
   { src: "/ICIM Photos/ICIM - Staff/LESA - LVN OFFICE MANAGER.jpeg", title: "Lesa, LVN Office Manager" },
   { src: "/ICIM Photos/ICIM - Staff/PEGGY - LVN.jpeg", title: "Peggy, LVN" },
-  { src: "/ICIM Photos/ICIM - Staff/TIFFANY - LVN MANAGER.jpeg", title: "Tiffany, LVN Manager" },
+  { src: "/ICIM Photos/ICIM - Staff/TIFFANY - LVN MANAGER.jpeg", title: "Tiffany, Nurse" },
 ];
 
 const clinicImages: GalleryImage[] = [

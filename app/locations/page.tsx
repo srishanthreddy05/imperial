@@ -62,7 +62,7 @@ export default function LocationsPage() {
 
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900">Anna Clinic (Collin County)</h2>
-                  <p className="text-xs text-gray-500 mt-1 font-medium">Newest Location Facility</p>
+                  <p className="text-xs text-[#005EB8] mt-1 font-semibold">By appointment only — alternating Fridays</p>
                 </div>
 
                 <div className="space-y-3 text-sm text-gray-700 bg-white p-5 rounded-2xl border border-gray-200">
@@ -198,14 +198,16 @@ export default function LocationsPage() {
 
           {/* HOURS TABLE */}
           <div className="max-w-4xl mx-auto bg-white rounded-3xl p-8 border border-gray-200 shadow-sm space-y-6">
-            <div className="flex items-center justify-between border-b pb-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b pb-4">
               <div>
                 <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                  <Clock className="w-6 h-6 text-[#005EB8]" /> Operating Hours
+                  <Clock className="w-6 h-6 text-[#005EB8]" /> Operating Hours & Availability
                 </h3>
-                <p className="text-xs text-gray-500 mt-0.5">Applies to both Anna & Sherman clinic schedules</p>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Sherman Clinic hours below. Anna Clinic: <strong>By appointment only — alternating Fridays</strong>.
+                </p>
               </div>
-              <span className="bg-[#005EB8]/10 text-[#005EB8] text-xs font-bold px-3 py-1 rounded-full">
+              <span className="bg-[#005EB8]/10 text-[#005EB8] text-xs font-bold px-3 py-1 rounded-full shrink-0">
                 Phone: (903) 957-0417
               </span>
             </div>

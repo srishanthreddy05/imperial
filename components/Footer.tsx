@@ -46,7 +46,9 @@ export default function Footer() {
             <div className="pt-2 flex items-center space-x-3">
               {/* Facebook */}
               <a
-                href="#facebook"
+                href="https://www.facebook.com/share/19Uhr49fEk/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-9 h-9 rounded-full bg-gray-800 hover:bg-[#005EB8] text-gray-400 hover:text-white flex items-center justify-center transition-colors"
                 aria-label="Facebook"
               >
@@ -57,7 +59,9 @@ export default function Footer() {
 
               {/* Instagram */}
               <a
-                href="#instagram"
+                href="https://www.instagram.com/Imperialcareinternalmedicine/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-9 h-9 rounded-full bg-gray-800 hover:bg-[#00A9CE] text-gray-400 hover:text-white flex items-center justify-center transition-colors"
                 aria-label="Instagram"
               >
@@ -79,9 +83,11 @@ export default function Footer() {
 
               {/* X / Twitter */}
               <a
-                href="#twitter"
+                href="https://x.com/internal88443"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-9 h-9 rounded-full bg-gray-800 hover:bg-[#00A9CE] text-gray-400 hover:text-white flex items-center justify-center transition-colors"
-                aria-label="Twitter / X"
+                aria-label="X (formerly Twitter)"
               >
                 <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
@@ -187,18 +193,25 @@ export default function Footer() {
               Office Hours
             </h3>
 
-            <div className="bg-gray-800/60 p-3.5 rounded-lg border border-gray-700 text-xs space-y-1.5 mb-4">
-              <div className="flex justify-between">
-                <span>Monday – Thursday:</span>
-                <span className="font-semibold text-white">8:00 AM – 5:00 PM</span>
+            <div className="bg-gray-800/60 p-3.5 rounded-lg border border-gray-700 text-xs space-y-2 mb-4">
+              <div>
+                <span className="block font-semibold text-white mb-0.5">Sherman Clinic</span>
+                <div className="flex justify-between text-gray-300">
+                  <span>Mon – Thu:</span>
+                  <span className="font-semibold text-white">8:00 AM – 5:00 PM</span>
+                </div>
+                <div className="flex justify-between text-gray-300">
+                  <span>Friday:</span>
+                  <span className="font-medium text-[#00A9CE]">Telephone appointments</span>
+                </div>
               </div>
-              <div className="flex justify-between border-t border-gray-700/50 pt-1">
-                <span>Friday:</span>
-                <span className="font-medium text-[#00A9CE]">Telephone appointments</span>
+              <div className="border-t border-gray-700/50 pt-1.5">
+                <span className="block font-semibold text-white mb-0.5">Anna Clinic</span>
+                <p className="text-gray-300">By appointment only — alternating Fridays</p>
               </div>
-              <div className="flex justify-between border-t border-gray-700/50 pt-1">
-                <span>Saturday – Sunday:</span>
-                <span className="text-gray-400">Closed</span>
+              <div className="border-t border-gray-700/50 pt-1 flex justify-between text-gray-400">
+                <span>Sat – Sun:</span>
+                <span>Closed</span>
               </div>
             </div>
 

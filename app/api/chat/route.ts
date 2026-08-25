@@ -1,253 +1,196 @@
 import { randomUUID } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
+import { GeminiService } from "@/lib/gemini/service";
+import type { ChatMessage, GeminiResponse } from "@/lib/gemini/types";
 import {
-  buildReceptionistMessages,
-  clearCallbackState,
-  extractPatientMemory,
-  getFallbackReceptionistReply,
-  hasAllPatientDetails,
-  isValidEmail,
-  isValidPhone,
-  isEmergencyMessage,
-  isCallbackCancellation,
-  isLikelyCallbackResponse,
-  isLikelyNewQuestion,
-  shouldOfferCallback,
-  type ChatMessage,
-  type PatientMemory,
-} from "@/lib/chat/receptionist";
+  getConversation,
+  saveConversation,
+  markConversationEmailSent,
+} from "@/lib/firestore/conversations";
+import { saveLead } from "@/lib/firestore/leads";
 import {
-  CALLBACK_DETAILS_REQUEST,
-  CALLBACK_DETAILS_REMINDER,
-  CALLBACK_CANCELLED_MESSAGE,
-  CALLBACK_SUBMITTED_MESSAGE,
-  EMERGENCY_MESSAGE,
-  INITIAL_RECEPTIONIST_MESSAGE,
-  OFFER_CALLBACK_MESSAGE,
-} from "@/lib/chat/receptionistMessages";
-import { sendCallbackRequestEmail } from "@/lib/email/callbackRequest";
-import { getCallbackRequest, saveCallbackRequest, markCallbackRequestEmailSent } from "@/lib/firestore/callbackRequests";
-import {
-  getAIConversation,
-  markAIConversationCallbackSubmitted,
-  saveAIConversation,
-  type AIConversationDocument,
-} from "@/lib/firestore/aiConversations";
-import { callGroqChat, hasGroqApiKey } from "@/lib/groq/client";
-import { generateCallbackSummary } from "@/lib/summary/callbackSummary";
+  sendAppointmentNotification,
+  sendCallbackNotification,
+  sendContactNotification,
+} from "@/lib/email/receptionistNotification";
 
-interface IncomingHistoryMessage {
-  role?: unknown;
-  content?: unknown;
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+interface IncomingBody {
+  message?: unknown;
+  conversationId?: unknown;
+  history?: { role?: unknown; content?: unknown }[];
 }
 
-export async function POST(request: NextRequest) {
-  try {
-    const body = (await request.json()) as {
-      message?: unknown;
-      history?: IncomingHistoryMessage[];
-      conversationId?: unknown;
-      action?: unknown;
-    };
-    const message = typeof body.message === "string" ? body.message.replace(/[<>]/g, "").trim() : "";
-    const action = body.action === "request_callback" ? "request_callback" : undefined;
+// ─── Email Trigger Logic ──────────────────────────────────────────────────────
 
-    if ((!message && !action) || message.length > 500) {
+/**
+ * Determines whether a notification email should be sent, and which type.
+ * Emails are NEVER sent on every message — only when enough data is collected.
+ */
+function shouldSendEmail(
+  r: GeminiResponse,
+  alreadySent: boolean
+): "appointment" | "callback" | "contact" | null {
+  if (alreadySent) return null;
+  if (!r.isComplete) return null;
+
+  if (r.intent === "appointment") return "appointment";
+  if (r.intent === "callback") return "callback";
+
+  // For insurance / general enquiries with contact info
+  if (
+    (r.intent === "insurance" || r.intent === "general_question") &&
+    r.patient.name &&
+    (r.patient.phone || r.patient.email)
+  ) {
+    return "contact";
+  }
+
+  return null;
+}
+
+/**
+ * True when the patient has provided enough contact info to create a lead.
+ */
+function hasContactInfo(r: GeminiResponse): boolean {
+  return Boolean(r.patient.name && (r.patient.phone || r.patient.email));
+}
+
+// ─── Route Handler ────────────────────────────────────────────────────────────
+
+export async function POST(request: NextRequest) {
+  const now = new Date().toISOString();
+
+  try {
+    // ── 1. Parse & validate input ──────────────────────────────────────────
+    const body = (await request.json()) as IncomingBody;
+
+    const message =
+      typeof body.message === "string"
+        ? body.message.replace(/[<>]/g, "").trim()
+        : "";
+
+    if (!message || message.length > 1000) {
       return NextResponse.json({ error: "Invalid message" }, { status: 400 });
     }
 
     const conversationId =
-      typeof body.conversationId === "string" && body.conversationId.trim() !== ""
+      typeof body.conversationId === "string" && body.conversationId.trim()
         ? body.conversationId.trim()
         : randomUUID();
-    const existingConversation = await getAIConversation(conversationId);
-    const previousMessages = getPreviousMessages(existingConversation, body.history);
-    const messagesWithUser = message
-      ? [...previousMessages, { role: "user" as const, content: message, timestamp: new Date().toISOString() }]
-      : previousMessages;
-    const memory = extractPatientMemory(messagesWithUser, getExistingMemory(existingConversation));
-    if (action === "request_callback") {
-      memory.callbackRequested = true;
-      memory.intakeMode = true;
-      memory.callbackState = "CALLBACK_COLLECTING";
-    }
 
-    let reply: string;
-    let callbackOffer = false;
-    const callbackAlreadySubmitted = Boolean(existingConversation?.callbackSubmitted || memory.callbackSubmitted);
-    const callbackActive = Boolean(memory.callbackRequested && !callbackAlreadySubmitted);
+    // ── 2. Load existing conversation ──────────────────────────────────────
+    const existing = await getConversation(conversationId);
 
-    if (callbackActive && isCallbackCancellation(message)) {
-      const clearedMemory = clearCallbackState(memory);
-      reply = CALLBACK_CANCELLED_MESSAGE;
-      const finalMessages = [...messagesWithUser, { role: "assistant" as const, content: reply, timestamp: new Date().toISOString() }];
-      await saveAIConversation(conversationId, finalMessages, clearedMemory, existingConversation);
+    // ── 3. Build message history ───────────────────────────────────────────
+    // Prefer Firestore history over client-sent history (single source of truth)
+    const previousMessages: ChatMessage[] = existing?.messages ?? sanitiseClientHistory(body.history);
 
-      return NextResponse.json({
-        reply,
-        conversationId,
-        callbackSubmitted: false,
-        callbackOffer: false,
-      });
-    }
+    const messagesWithUser: ChatMessage[] = [
+      ...previousMessages,
+      { role: "user", content: message, timestamp: now },
+    ];
 
-    if (callbackActive && isLikelyNewQuestion(message) && !isLikelyCallbackResponse(message)) {
-      memory.callbackState = "GENERAL_CHAT";
-      reply = await getReceptionistReply(messagesWithUser, memory, message);
-      const finalMessages = [...messagesWithUser, { role: "assistant" as const, content: reply, timestamp: new Date().toISOString() }];
-      await saveAIConversation(conversationId, finalMessages, memory, existingConversation);
+    // ── 4. Call Gemini (single API call, returns both reply + structured data)
+    const geminiResponse = await GeminiService.chat(messagesWithUser);
 
-      return NextResponse.json({
-        reply,
-        conversationId,
-        callbackSubmitted: false,
-        callbackOffer: false,
-      });
-    }
+    // ── 5. Append assistant reply to history ───────────────────────────────
+    const finalMessages: ChatMessage[] = [
+      ...messagesWithUser,
+      {
+        role: "assistant",
+        content: geminiResponse.assistantResponse,
+        timestamp: new Date().toISOString(),
+      },
+    ];
 
-    if (isEmergencyMessage(message)) {
-      reply = EMERGENCY_MESSAGE;
-    } else if (action === "request_callback" && !callbackAlreadySubmitted) {
-      reply = CALLBACK_DETAILS_REQUEST;
-      memory.detailsRequested = true;
-      memory.callbackState = "CALLBACK_COLLECTING";
-    } else if (memory.callbackRequested && !callbackAlreadySubmitted) {
-      if (!hasAllPatientDetails(memory) || !isValidEmail(memory.email) || !isValidPhone(memory.phone)) {
-        reply = memory.detailsRequested ? CALLBACK_DETAILS_REMINDER : CALLBACK_DETAILS_REQUEST;
-        memory.detailsRequested = true;
-        memory.callbackState = "CALLBACK_COLLECTING";
-      } else {
-        const requestedAt = new Date().toISOString();
-        const requestId = existingConversation?.callbackRequestId || conversationId;
-        const existingCallbackRequest = await getCallbackRequest(requestId);
-        const summary = await generateCallbackSummary(messagesWithUser);
-        if (!existingCallbackRequest) {
-          await saveCallbackRequest({
-            requestId,
-            patientName: memory.patientName || "",
-            phone: memory.phone || "",
-            email: memory.email || "",
-            preferredCallbackTime: memory.preferredCallbackTime || "",
-            conversation: messagesWithUser,
-            conversationSummary: summary,
-            status: "new",
-            callbackRequested: true,
-            emailSent: false,
-            createdAt: requestedAt,
-          });
-        }
-
-        if (!existingCallbackRequest?.emailSent) {
-          await sendCallbackRequestEmail({
-            patientName: memory.patientName || "",
-            phone: memory.phone || "",
-            email: memory.email || "",
-            preferredCallbackTime: memory.preferredCallbackTime || "",
-            summary,
-            conversation: messagesWithUser,
-            requestedAt: existingCallbackRequest?.createdAt || requestedAt,
-          });
-          await markCallbackRequestEmailSent(requestId);
-        }
-
-        memory.callbackSubmitted = true;
-        memory.emailSent = true;
-        memory.callbackState = "CALLBACK_COMPLETED";
-        reply = CALLBACK_SUBMITTED_MESSAGE;
-
-        const finalMessages = [...messagesWithUser, { role: "assistant" as const, content: reply, timestamp: new Date().toISOString() }];
-        await saveAIConversation(conversationId, finalMessages, memory, existingConversation);
-        await markAIConversationCallbackSubmitted(conversationId, requestId);
-
-        return NextResponse.json({ reply, conversationId, callbackSubmitted: true, callbackOffer: false });
-      }
-    } else {
-      reply = await getReceptionistReply(messagesWithUser, memory, message);
-      callbackOffer = shouldOfferCallback(messagesWithUser, memory);
-      if (callbackOffer && !callbackAlreadySubmitted) {
-        reply = OFFER_CALLBACK_MESSAGE;
-        memory.callbackState = "CALLBACK_PENDING";
-      }
-    }
-
-    const finalMessages = [...messagesWithUser, { role: "assistant" as const, content: reply, timestamp: new Date().toISOString() }];
-    await saveAIConversation(conversationId, finalMessages, memory, existingConversation);
-
-    return NextResponse.json({
-      reply,
+    // ── 6. Save conversation to Firestore ──────────────────────────────────
+    const savedConversation = await saveConversation(
       conversationId,
-      callbackSubmitted: callbackAlreadySubmitted || memory.callbackSubmitted,
-      callbackOffer,
+      finalMessages,
+      geminiResponse,
+      existing
+    );
+
+    // ── 7. Determine and send email notification (gated) ───────────────────
+    const emailType = shouldSendEmail(geminiResponse, savedConversation.emailSent);
+    if (emailType) {
+      try {
+        const emailInput = { geminiResponse, conversationId, timestamp: now };
+
+        if (emailType === "appointment") {
+          await sendAppointmentNotification(emailInput);
+        } else if (emailType === "callback") {
+          await sendCallbackNotification(emailInput);
+        } else {
+          await sendContactNotification(emailInput);
+        }
+
+        await markConversationEmailSent(conversationId);
+      } catch (emailError) {
+        // Log but never fail the chat due to an email error
+        console.error("[Chat API] Email notification failed:", emailError);
+      }
+    }
+
+    // ── 8. Save lead when contact info is complete ─────────────────────────
+    if (geminiResponse.isComplete && hasContactInfo(geminiResponse) && !existing?.emailSent) {
+      try {
+        await saveLead({
+          leadId: conversationId,
+          intent: geminiResponse.intent,
+          name: geminiResponse.patient.name,
+          phone: geminiResponse.patient.phone,
+          email: geminiResponse.patient.email,
+          summary: geminiResponse.summary,
+          status: "new",
+          createdAt: existing?.createdAt ?? now,
+        });
+      } catch (leadError) {
+        // Non-fatal
+        console.error("[Chat API] Lead save failed:", leadError);
+      }
+    }
+
+    // ── 9. Return — only the assistantResponse goes to the frontend ────────
+    return NextResponse.json({
+      reply: geminiResponse.assistantResponse,
+      conversationId,
     });
   } catch (error) {
-    console.error("Chat API error:", error);
+    console.error("[Chat API] Unhandled error:", error);
     return NextResponse.json(
       {
-        reply: "I'm sorry, I'm having trouble right now. Please call us at (903) 957-0417 for assistance.",
+        reply:
+          "I'm sorry, I'm having trouble right now. Please call us at (903) 957-0417 for immediate assistance.",
       },
       { status: 500 }
     );
   }
 }
 
-function getPreviousMessages(existingConversation: AIConversationDocument | null, history?: IncomingHistoryMessage[]) {
-  if (existingConversation?.messages) return existingConversation.messages;
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-  return (history || [])
-    .filter((message) => message.content !== INITIAL_RECEPTIONIST_MESSAGE)
-    .filter((message): message is { role: "user" | "assistant"; content: string } => {
-      return (message.role === "user" || message.role === "assistant") && typeof message.content === "string";
-    })
-    .map((message) => ({
-      role: message.role,
-      content: message.content.replace(/[<>]/g, "").trim(),
+/**
+ * Sanitises the history array sent by the client when no Firestore record exists yet.
+ * Strips invalid roles, HTML characters, and empty messages.
+ */
+function sanitiseClientHistory(
+  history?: { role?: unknown; content?: unknown }[]
+): ChatMessage[] {
+  if (!Array.isArray(history)) return [];
+
+  return history
+    .filter(
+      (m): m is { role: "user" | "assistant"; content: string } =>
+        (m.role === "user" || m.role === "assistant") &&
+        typeof m.content === "string" &&
+        m.content.trim() !== ""
+    )
+    .map((m) => ({
+      role: m.role,
+      content: m.content.replace(/[<>]/g, "").trim(),
       timestamp: new Date().toISOString(),
-    }))
-    .filter((message) => message.content !== "");
+    }));
 }
-
-function getExistingMemory(existingConversation: AIConversationDocument | null): Partial<PatientMemory> | undefined {
-  if (!existingConversation) return undefined;
-
-  return {
-    patientName: existingConversation.patientName || undefined,
-    phone: existingConversation.phone || undefined,
-    email: existingConversation.email || undefined,
-    reasonForContact: existingConversation.reasonForContact || undefined,
-    symptoms: existingConversation.symptoms,
-    intakeMode: existingConversation.intakeMode,
-    detailsRequested: existingConversation.detailsRequested,
-    callbackRequested: existingConversation.callbackRequested,
-    callbackSubmitted: existingConversation.callbackSubmitted,
-    emailSent: existingConversation?.emailSent,
-    preferredCallbackTime: existingConversation?.preferredCallbackTime || undefined,
-    callbackState:
-      existingConversation.callbackState ||
-      (existingConversation.callbackSubmitted
-        ? "CALLBACK_COMPLETED"
-        : existingConversation.callbackRequested
-          ? existingConversation.detailsRequested
-            ? "CALLBACK_COLLECTING"
-            : "CALLBACK_PENDING"
-          : "GENERAL_CHAT"),
-  };
-}
-
-async function getReceptionistReply(messages: ChatMessage[], memory: PatientMemory, userMessage: string) {
-  if (!hasGroqApiKey()) {
-    return getFallbackReceptionistReply(userMessage);
-  }
-
-  try {
-    const reply = await callGroqChat(buildReceptionistMessages(messages, memory), {
-      maxTokens: 300,
-      temperature: 0.3,
-    });
-
-    return reply || getFallbackReceptionistReply(userMessage);
-  } catch (error) {
-    console.error("Groq receptionist reply error:", error);
-    return getFallbackReceptionistReply(userMessage);
-  }
-}
-

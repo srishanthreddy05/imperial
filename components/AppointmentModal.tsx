@@ -133,9 +133,10 @@ export default function AppointmentModal({ isOpen, onClose }: AppointmentModalPr
                     }`}
                     disabled={loading}
                   >
-                    <span className="block text-xs font-bold text-[#00A9CE] uppercase">NEW LOCATION</span>
+                    <span className="block text-xs font-bold text-[#00A9CE] uppercase">COLLIN COUNTY LOCATION</span>
                     <span className="font-bold text-sm">Anna Clinic</span>
                     <span className="block text-xs text-gray-500 mt-0.5">450 N Standridge Blvd #104</span>
+                    <span className="block text-[11px] text-[#005EB8] font-medium mt-0.5">By appointment only — alternating Fridays</span>
                   </button>
 
                   <button
@@ -168,7 +169,7 @@ export default function AppointmentModal({ isOpen, onClose }: AppointmentModalPr
                   disabled={loading}
                 >
                   <option value="Primary Care / Annual Wellness Exam">Primary Care & Adult Wellness Exam</option>
-                  <option value="Semaglutide Weight Loss Consultation">Semaglutide Weight Loss Program</option>
+                  <option value="Weight Loss Management (Tirzepatide & Semaglutide)">Weight Loss Management (Tirzepatide & Semaglutide)</option>
                   <option value="Vitamin B12 Injection Service">Vitamin B12 Injections</option>
                   <option value="Chronic Disease Management">Chronic Disease Management & Follow-up</option>
                   <option value="New Symptom Evaluation">New Symptom Evaluation / Physical Assessment</option>

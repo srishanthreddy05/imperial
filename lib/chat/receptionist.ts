@@ -218,11 +218,11 @@ export function getFallbackReceptionistReply(message: string) {
   const lower = message.toLowerCase();
 
   if (lower.includes("hour") || lower.includes("open") || lower.includes("time")) {
-    return "Our office hours are Monday through Thursday from 8:00 AM to 5:00 PM. Fridays are reserved for telephone appointments upon request. We are closed Saturday and Sunday.";
+    return "Our Sherman Clinic hours are Monday through Thursday from 8:00 AM to 5:00 PM (Fridays for telephone appointments upon request). Anna Clinic is by appointment only on alternating Fridays.";
   }
 
   if (lower.includes("location") || lower.includes("anna") || lower.includes("sherman") || lower.includes("address")) {
-    return "We have two locations: Anna at 450 N Standridge Blvd, Suite 104, Anna, TX 75409, and Sherman at 1700 N Travis St, Sherman, TX 75092.";
+    return "We have two locations: Anna at 450 N Standridge Blvd, Suite 104, Anna, TX 75409 (by appointment only on alternating Fridays), and Sherman at 1700 N Travis St, Sherman, TX 75092 (Mon–Thu 8:00 AM – 5:00 PM).";
   }
 
   if (lower.includes("form") || lower.includes("download") || lower.includes("pdf")) {
@@ -233,8 +233,8 @@ export function getFallbackReceptionistReply(message: string) {
     return "For accepted insurance and plan-specific questions, please call our office at (903) 957-0417 so the reception team can confirm the most current details.";
   }
 
-  if (lower.includes("semaglutide") || lower.includes("weight")) {
-    return "Imperial Care offers a physician-supervised Semaglutide Weight Loss Program. The first step is a consultation so the clinical team can review whether it is appropriate for you.";
+  if (lower.includes("semaglutide") || lower.includes("tirzepatide") || lower.includes("weight")) {
+    return "Imperial Care offers Weight Loss Management with Tirzepatide along with Semaglutide compound shots for weight loss. The first step is a consultation so the clinical team can review whether it is appropriate for you.";
   }
 
   if (lower.includes("b12") || lower.includes("fatigue") || lower.includes("energy")) {

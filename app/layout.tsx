@@ -18,7 +18,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Imperial Care Internal Medicine | Dr. Sumbul Islam, MD | Anna & Sherman, TX",
   description:
-    "Personalized, evidence-based primary care and internal medicine led by Dr. Sumbul Islam, MD. Serving Anna, TX (Collin County) and Sherman, TX (Grayson County). Services include adult wellness exams, Semaglutide weight loss program, and B12 injections.",
+    "Personalized, evidence-based primary care and internal medicine led by Dr. Sumbul Islam, MD. Serving Anna, TX (Collin County) and Sherman, TX (Grayson County). Services include adult wellness exams, Tirzepatide & Semaglutide weight loss management, and B12 injections.",
   icons: {
     icon: [
       { url: "/loho.jpeg", type: "image/jpeg" },
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     "Dr. Sumbul Islam MD",
     "Internal Medicine Anna TX",
     "Primary Care Sherman TX",
-    "Semaglutide Weight Loss Anna TX",
+    "Tirzepatide Semaglutide Weight Loss Anna TX",
     "Vitamin B12 Injections Sherman TX",
     "Collin County Doctor",
     "Grayson County Internal Medicine",
@@ -95,7 +95,7 @@ const jsonLdSchema = {
       "telephone": "(903) 957-0417"
     }
   ],
-  "openingHours": "Mo-Th 08:00-17:00, Fr 08:00-17:00"
+  "openingHours": "Mo-Th 08:00-17:00"
 };
 
 export default function RootLayout({

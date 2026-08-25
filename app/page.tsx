@@ -378,20 +378,19 @@ export default function HomePage() {
       </section>
 
       {/* LOCATIONS PREVIEW */}
-      <section className="py-20 bg-gray-50 border-t border-gray-200">
+      <section className="py-20 bg-gray-50 border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-12 gap-4">
             <div>
-              <span className="text-xs font-bold text-[#005EB8] uppercase tracking-wider">Convenient Access</span>
-              <h2 className="text-3xl font-extrabold text-gray-900 mt-1">Our Texas Locations</h2>
-              <p className="text-sm text-gray-600">Serving patients in Collin County and Grayson County.</p>
+              <span className="text-xs font-bold text-[#005EB8] uppercase tracking-wider">Dual Clinic Locations</span>
+              <h2 className="text-3xl font-extrabold text-gray-900 mt-1">Convenient Access in Anna & Sherman</h2>
             </div>
             <Link
               href="/locations"
-              className="text-sm font-bold text-[#005EB8] hover:underline flex items-center gap-1"
+              className="text-sm font-bold text-[#005EB8] hover:underline flex items-center gap-1 shrink-0"
             >
-              View Full Hours & Directions <ArrowRight className="w-4 h-4" />
+              View Full Location Details <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
 
@@ -401,10 +400,10 @@ export default function HomePage() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="bg-[#00A9CE]/10 text-[#00A9CE] text-xs font-bold px-3 py-1 rounded-full border border-[#00A9CE]/20">
-                    NEW COLLIN COUNTY LOCATION
+                    COLLIN COUNTY LOCATION
                   </span>
                   <span className="text-xs text-green-600 font-semibold flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-green-500"></span> Accepting Patients
+                    <span className="w-2 h-2 rounded-full bg-green-500"></span> By Appointment
                   </span>
                 </div>
                 
@@ -421,7 +420,7 @@ export default function HomePage() {
                   </div>
                   <div className="flex items-center gap-2.5">
                     <Clock className="w-4 h-4 text-[#005EB8] shrink-0" />
-                    <span>Mon–Thu: 8:00 AM – 5:00 PM</span>
+                    <span>By appointment only — alternating Fridays</span>
                   </div>
                 </div>
               </div>

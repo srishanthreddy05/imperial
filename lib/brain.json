@@ -11,22 +11,19 @@
     {
       "name": "Collin County Location (Anna, TX)",
       "address": "450 N Standridge Blvd, Suite 104, Anna, TX 75409, USA",
-      "status": "Now Serving Collin County! Accepting new patient appointments.",
+      "status": "By appointment only — alternating Fridays",
       "directions": "https://maps.google.com/?q=450+N+Standridge+Blvd+Suite+104+Anna+TX+75409"
     },
     {
       "name": "Grayson County Location (Sherman, TX)",
       "address": "1700 N Travis St, Sherman, Texas 75092",
-      "status": "Accepting patient appointments Monday–Friday",
+      "status": "Accepting patient appointments Monday–Thursday (Friday telephone appointments upon request)",
       "directions": "https://maps.google.com/?q=1700+N+Travis+St+Sherman+Texas+75092"
     }
   ],
   "hours": {
-    "Monday": "8:00 AM – 5:00 PM",
-    "Tuesday": "8:00 AM – 5:00 PM",
-    "Wednesday": "8:00 AM – 5:00 PM",
-    "Thursday": "8:00 AM – 5:00 PM",
-    "Friday": "Telephone appointments upon request",
+    "Sherman Clinic": "Mon–Thu: 8:00 AM – 5:00 PM (Friday telephone appointments upon request)",
+    "Anna Clinic": "By appointment only — alternating Fridays",
     "Saturday": "Closed",
     "Sunday": "Closed"
   },
@@ -36,16 +33,18 @@
       "description": "Comprehensive adult wellness checks, chronic disease management (hypertension, diabetes, cholesterol), preventative care, and new symptom evaluation."
     },
     {
-      "name": "Semaglutide Weight Loss Program",
-      "description": "Compounded subcutaneous once-weekly weight loss injection. Benefits include promoting fat burning, improving blood sugar, lowering A1C, lowering BMI, and reducing glucose. Average loss 2-4 lbs/week with diet/exercise. Process: Consult -> NP/Doctor review -> Prescription."
+      "name": "Weight Loss Management",
+      "description": "Tirzepatide along with Semaglutide compound shots for weight loss. Physician-supervised weight loss management tailored to individual health goals."
     },
     {
       "name": "Vitamin B12 Injections",
-      "description": "Vitality injection boosting red blood cell formation, preventing anemia, improving mood, energy, and brain health. Helps older adults, vegans, Metformin users, and PPI users. Treats symptoms like fatigue, pins & needles, sore tongue, and muscle weakness."
+      "description": "Vitality injection boosting red blood cell formation, preventing anemia, improving mood, energy, and brain health."
     }
   ],
   "staff": [
     { "name": "Dr. Sumbul Islam, MD", "role": "Internal Medicine Physician" },
+    { "name": "Tiffany", "role": "Nurse" },
+    { "name": "Makinzie", "role": "MA" },
     { "name": "Kelly", "role": "Front Desk & Patient Relations" },
     { "name": "Peggy, LVN", "role": "Licensed Vocational Nurse" },
     { "name": "LESA", "role": "Practice Manager / Care Administrator" }

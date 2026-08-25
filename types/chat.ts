@@ -1,18 +1,28 @@
+// ─── Re-export Gemini types for convenience ───────────────────────────────────
+export type {
+  ChatMessage,
+  ConversationIntent,
+  ConversationDocument,
+  ConversationStatus,
+  LeadDocument,
+  GeminiResponse,
+  PatientInfo,
+  AppointmentInfo,
+  CallbackInfo,
+  GeminiCallOptions,
+} from "@/lib/gemini/types";
+
+// ─── Frontend Message ─────────────────────────────────────────────────────────
+
+/** Used only in the BotModal component to render chat bubbles. */
 export interface Message {
   id: string;
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   content: string;
   timestamp: string;
 }
 
-export interface ChatRequest {
-  message: string;
-  history?: { role: string; content: string }[];
-}
-
-export interface ChatResponse {
-  reply: string;
-}
+// ─── Clinic Knowledge Base ────────────────────────────────────────────────────
 
 export interface BrainFile {
   clinic: {
