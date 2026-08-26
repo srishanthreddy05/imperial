@@ -1,12 +1,243 @@
-"use client";
-
-import { useState } from "react";
-import { X, Calendar, Clock, MapPin, CheckCircle2, User, Phone, Mail, RefreshCw, AlertCircle } from "lucide-react";
+import { useState, useMemo } from "react";
+import { X, Calendar, Clock, MapPin, CheckCircle2, User, Phone, Mail, RefreshCw, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import OTPModal from "./OTPModal";
 
 interface AppointmentModalProps {
   isOpen: boolean;
   onClose: () => void;
+}
+
+export function isValidAnnaDate(dateObj: Date): boolean {
+  if (!dateObj || isNaN(dateObj.getTime())) return false;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const target = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+  if (target < today) return false;
+
+  if (target.getDay() !== 5) return false; // Friday only
+
+  const dayOfMonth = target.getDate();
+  const isFirstFriday = dayOfMonth >= 1 && dayOfMonth <= 7;
+  const isThirdFriday = dayOfMonth >= 15 && dayOfMonth <= 21;
+
+  return isFirstFriday || isThirdFriday;
+}
+
+export function isValidShermanDate(dateObj: Date): boolean {
+  if (!dateObj || isNaN(dateObj.getTime())) return false;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const target = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+  if (target < today) return false;
+
+  const dayOfWeek = target.getDay();
+  return dayOfWeek >= 1 && dayOfWeek <= 5; // Mon-Fri
+}
+
+export function isAlternatingFriday(dateStr: string): boolean {
+  if (!dateStr) return false;
+  const parts = dateStr.split("-");
+  if (parts.length !== 3) return false;
+  const year = parseInt(parts[0], 10);
+  const month = parseInt(parts[1], 10) - 1;
+  const day = parseInt(parts[2], 10);
+  if (isNaN(year) || isNaN(month) || isNaN(day)) return false;
+
+  const dateObj = new Date(year, month, day);
+  return isValidAnnaDate(dateObj);
+}
+
+export function getFirstUpcomingValidDate(isAnna: boolean): string {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const current = new Date(today);
+
+  for (let i = 0; i < 90; i++) {
+    const isValid = isAnna ? isValidAnnaDate(current) : isValidShermanDate(current);
+    if (isValid) {
+      const year = current.getFullYear();
+      const mm = String(current.getMonth() + 1).padStart(2, "0");
+      const dd = String(current.getDate()).padStart(2, "0");
+      return `${year}-${mm}-${dd}`;
+    }
+    current.setDate(current.getDate() + 1);
+  }
+  return "";
+}
+
+interface VisualCalendarPickerProps {
+  selectedDate: string;
+  onSelectDate: (dateStr: string) => void;
+  isAnna: boolean;
+  disabled?: boolean;
+}
+
+function VisualCalendarPicker({ selectedDate, onSelectDate, isAnna, disabled }: VisualCalendarPickerProps) {
+  const [viewDate, setViewDate] = useState(() => {
+    if (selectedDate) {
+      const parts = selectedDate.split("-");
+      if (parts.length === 3) {
+        return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, 1);
+      }
+    }
+    const today = new Date();
+    return new Date(today.getFullYear(), today.getMonth(), 1);
+  });
+
+  const year = viewDate.getFullYear();
+  const month = viewDate.getMonth();
+
+  const handlePrevMonth = () => {
+    setViewDate(new Date(year, month - 1, 1));
+  };
+
+  const handleNextMonth = () => {
+    setViewDate(new Date(year, month + 1, 1));
+  };
+
+  const firstDay = new Date(year, month, 1);
+  const startDayOfWeek = firstDay.getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  const daysGrid: ({ day: number; dateObj: Date; dateStr: string } | null)[] = [];
+  for (let i = 0; i < startDayOfWeek; i++) {
+    daysGrid.push(null);
+  }
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateObj = new Date(year, month, d);
+    const mm = String(month + 1).padStart(2, "0");
+    const dd = String(d).padStart(2, "0");
+    const dateStr = `${year}-${mm}-${dd}`;
+    daysGrid.push({ day: d, dateObj, dateStr });
+  }
+
+  const monthTitle = viewDate.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+
+  const formattedSelectedDate = useMemo(() => {
+    if (!selectedDate) return null;
+    const parts = selectedDate.split("-");
+    if (parts.length !== 3) return null;
+    const dateObj = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+    if (isNaN(dateObj.getTime())) return null;
+    return dateObj.toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  }, [selectedDate]);
+
+  return (
+    <div className="bg-[#F8F9FA] p-3.5 rounded-2xl border border-gray-200 space-y-3">
+      {/* Month Navigation */}
+      <div className="flex items-center justify-between">
+        <button
+          type="button"
+          onClick={handlePrevMonth}
+          disabled={disabled}
+          className="p-1.5 rounded-lg border border-gray-200 hover:bg-white hover:border-gray-300 text-gray-700 transition-colors shadow-2xs"
+          aria-label="Previous Month"
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+        <span className="font-bold text-sm text-gray-900">{monthTitle}</span>
+        <button
+          type="button"
+          onClick={handleNextMonth}
+          disabled={disabled}
+          className="p-1.5 rounded-lg border border-gray-200 hover:bg-white hover:border-gray-300 text-gray-700 transition-colors shadow-2xs"
+          aria-label="Next Month"
+        >
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* Weekday Headers */}
+      <div className="grid grid-cols-7 gap-1 text-center">
+        {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((dayName, idx) => (
+          <span
+            key={dayName}
+            className={`text-[10px] sm:text-xs font-bold uppercase tracking-wider ${
+              idx === 5 ? "text-[#005EB8]" : "text-gray-400"
+            }`}
+          >
+            {dayName}
+          </span>
+        ))}
+      </div>
+
+      {/* Days Grid */}
+      <div className="grid grid-cols-7 gap-1">
+        {daysGrid.map((item, idx) => {
+          if (!item) {
+            return <div key={`blank-${idx}`} className="h-8 sm:h-9" />;
+          }
+
+          const { day, dateObj, dateStr } = item;
+          const isSelected = selectedDate === dateStr;
+          const isValid = isAnna ? isValidAnnaDate(dateObj) : isValidShermanDate(dateObj);
+
+          if (isSelected) {
+            return (
+              <button
+                key={dateStr}
+                type="button"
+                onClick={() => onSelectDate(dateStr)}
+                disabled={disabled}
+                className="h-8 sm:h-9 rounded-xl bg-[#005EB8] text-white font-extrabold text-xs sm:text-sm flex items-center justify-center shadow-md ring-2 ring-[#005EB8] ring-offset-1 z-10"
+              >
+                {day}
+              </button>
+            );
+          }
+
+          if (isValid) {
+            return (
+              <button
+                key={dateStr}
+                type="button"
+                onClick={() => onSelectDate(dateStr)}
+                disabled={disabled}
+                className="h-8 sm:h-9 rounded-xl bg-sky-100 hover:bg-[#005EB8] text-[#005EB8] hover:text-white font-bold text-xs sm:text-sm flex items-center justify-center border border-[#005EB8]/30 shadow-2xs transition-all active:scale-95 cursor-pointer"
+              >
+                {day}
+              </button>
+            );
+          }
+
+          return (
+            <button
+              key={dateStr}
+              type="button"
+              disabled
+              className="h-8 sm:h-9 rounded-xl bg-gray-100/60 text-gray-300 text-xs flex items-center justify-center cursor-not-allowed select-none"
+            >
+              {day}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Selected Date Display */}
+      {formattedSelectedDate ? (
+        <div className="p-2.5 bg-white border border-[#005EB8]/30 rounded-xl text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 shadow-2xs">
+          <span className="text-gray-500 font-medium">Selected Date:</span>
+          <strong className="text-sm font-bold text-[#005EB8]">{formattedSelectedDate}</strong>
+        </div>
+      ) : (
+        <p className="text-xs text-amber-700 font-semibold text-center py-1">
+          ⚠️ Please click an available date on the calendar.
+        </p>
+      )}
+
+      {/* Helper Subtext */}
+      <p className="text-[11px] text-[#005EB8] font-semibold text-center pt-0.5">
+        ℹ️ Anna Clinic: 1st & 3rd Friday of month only
+      </p>
+    </div>
+  );
 }
 
 export default function AppointmentModal({ isOpen, onClose }: AppointmentModalProps) {
@@ -17,24 +248,71 @@ export default function AppointmentModal({ isOpen, onClose }: AppointmentModalPr
   const [confirmationNum, setConfirmationNum] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState(() => ({
     location: "Anna (Collin County)",
     service: "Primary Care / Annual Wellness Exam",
-    date: "",
+    date: getFirstUpcomingValidDate(true),
     timeSlot: "Morning (8:00 AM - 12:00 PM)",
     fullName: "",
     phone: "",
     email: "",
     isNewPatient: "yes",
     notes: "",
-  });
+  }));
 
   if (!isOpen) return null;
 
+  const isAnna = formData.location.includes("Anna");
+
+  const handleLocationChange = (newLocation: string) => {
+    setError(null);
+    const newIsAnna = newLocation.includes("Anna");
+    let validDate = formData.date;
+
+    if (newIsAnna) {
+      if (!isAlternatingFriday(formData.date)) {
+        validDate = getFirstUpcomingValidDate(true);
+      }
+    } else {
+      if (formData.date) {
+        const parts = formData.date.split("-");
+        if (parts.length === 3) {
+          const dateObj = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+          if (!isValidShermanDate(dateObj)) {
+            validDate = getFirstUpcomingValidDate(false);
+          }
+        }
+      } else {
+        validDate = getFirstUpcomingValidDate(false);
+      }
+    }
+
+    setFormData({ ...formData, location: newLocation, date: validDate });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError(null);
+
+    if (isAnna) {
+      if (!formData.date || !isAlternatingFriday(formData.date)) {
+        setError("Anna Clinic appointments are available on alternating Fridays (1st & 3rd Friday of each month). Please select a valid Friday date.");
+        return;
+      }
+    } else {
+      if (formData.date) {
+        const parts = formData.date.split("-");
+        if (parts.length === 3) {
+          const dateObj = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+          if (!isValidShermanDate(dateObj)) {
+            setError("Sherman Clinic is closed on weekends. Please select a weekday (Monday–Friday).");
+            return;
+          }
+        }
+      }
+    }
+
+    setLoading(true);
 
     try {
       const res = await fetch("/api/appointment/send-otp", {
@@ -73,7 +351,7 @@ export default function AppointmentModal({ isOpen, onClose }: AppointmentModalPr
     setFormData({
       location: "Anna (Collin County)",
       service: "Primary Care / Annual Wellness Exam",
-      date: "",
+      date: getFirstUpcomingValidDate(true),
       timeSlot: "Morning (8:00 AM - 12:00 PM)",
       fullName: "",
       phone: "",
@@ -125,7 +403,7 @@ export default function AppointmentModal({ isOpen, onClose }: AppointmentModalPr
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <button
                     type="button"
-                    onClick={() => setFormData({ ...formData, location: "Anna (Collin County)" })}
+                    onClick={() => handleLocationChange("Anna (Collin County)")}
                     className={`p-3 text-left rounded-xl border-2 transition-all ${
                       formData.location === "Anna (Collin County)"
                         ? "border-[#005EB8] bg-[#005EB8]/5 text-[#005EB8] font-semibold"
@@ -141,7 +419,7 @@ export default function AppointmentModal({ isOpen, onClose }: AppointmentModalPr
 
                   <button
                     type="button"
-                    onClick={() => setFormData({ ...formData, location: "Sherman (Grayson County)" })}
+                    onClick={() => handleLocationChange("Sherman (Grayson County)")}
                     className={`p-3 text-left rounded-xl border-2 transition-all ${
                       formData.location === "Sherman (Grayson County)"
                         ? "border-[#005EB8] bg-[#005EB8]/5 text-[#005EB8] font-semibold"
@@ -177,34 +455,52 @@ export default function AppointmentModal({ isOpen, onClose }: AppointmentModalPr
               </div>
 
               {/* Date & Time */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1.5 flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5 text-gray-500" /> Preferred Date *
-                  </label>
-                  <input
-                    type="date"
-                    required
-                    value={formData.date}
-                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm focus:ring-2 focus:ring-[#005EB8]"
-                    disabled={loading}
-                  />
-                </div>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
+                  <div className="md:col-span-7">
+                    <label className="block text-sm font-semibold text-gray-700 mb-1.5 flex items-center gap-1">
+                      <Calendar className="w-3.5 h-3.5 text-[#005EB8]" /> Preferred Date *
+                    </label>
+                    <VisualCalendarPicker
+                      selectedDate={formData.date}
+                      onSelectDate={(dateStr) => {
+                        setFormData({ ...formData, date: dateStr });
+                        if (error) setError(null);
+                      }}
+                      isAnna={isAnna}
+                      disabled={loading}
+                    />
+                  </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1.5 flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5 text-gray-500" /> Time Window *
-                  </label>
-                  <select
-                    value={formData.timeSlot}
-                    onChange={(e) => setFormData({ ...formData, timeSlot: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm focus:ring-2 focus:ring-[#005EB8]"
-                    disabled={loading}
-                  >
-                    <option value="Morning (8:00 AM - 12:00 PM)">Morning (8:00 AM - 12:00 PM)</option>
-                    <option value="Afternoon (1:00 PM - 5:00 PM)">Afternoon (1:00 PM - 5:00 PM)</option>
-                  </select>
+                  <div className="md:col-span-5 space-y-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1.5 flex items-center gap-1">
+                        <Clock className="w-3.5 h-3.5 text-gray-500" /> Time Window *
+                      </label>
+                      <select
+                        value={formData.timeSlot}
+                        onChange={(e) => setFormData({ ...formData, timeSlot: e.target.value })}
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm focus:ring-2 focus:ring-[#005EB8]"
+                        disabled={loading}
+                      >
+                        <option value="Morning (8:00 AM - 12:00 PM)">Morning (8:00 AM - 12:00 PM)</option>
+                        <option value="Afternoon (1:00 PM - 5:00 PM)">Afternoon (1:00 PM - 5:00 PM)</option>
+                      </select>
+                    </div>
+
+                    <div className="p-3.5 bg-[#005EB8]/5 border border-[#005EB8]/20 rounded-xl text-xs space-y-1">
+                      <strong className="block font-bold text-[#005EB8]">Clinic Schedule Note</strong>
+                      {isAnna ? (
+                        <p className="text-gray-600 leading-relaxed">
+                          Anna Clinic is open strictly by appointment on the 1st & 3rd Friday of each month.
+                        </p>
+                      ) : (
+                        <p className="text-gray-600 leading-relaxed">
+                          Sherman Clinic is open Monday–Thursday 8:00 AM–5:00 PM (Friday telephone appointments).
+                        </p>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
 

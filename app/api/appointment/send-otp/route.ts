@@ -73,10 +73,39 @@ export async function POST(request: Request) {
       });
     }
 
+function isAlternatingFriday(dateStr: string): boolean {
+  if (!dateStr) return false;
+  const parts = dateStr.split("-");
+  if (parts.length !== 3) return false;
+  const year = parseInt(parts[0], 10);
+  const month = parseInt(parts[1], 10) - 1;
+  const day = parseInt(parts[2], 10);
+  if (isNaN(year) || isNaN(month) || isNaN(day)) return false;
+
+  const dateObj = new Date(year, month, day);
+  if (dateObj.getDay() !== 5) return false;
+
+  const dayOfMonth = dateObj.getDate();
+  const isFirstFriday = dayOfMonth >= 1 && dayOfMonth <= 7;
+  const isThirdFriday = dayOfMonth >= 15 && dayOfMonth <= 21;
+
+  return isFirstFriday || isThirdFriday;
+}
+
     // HANDLE INITIAL BOOKING REQUEST FLOW
     const { fullName, phone, date, timeSlot, location, service } = appointmentData;
     if (!fullName || !phone || !date || !timeSlot || !location || !service) {
       return NextResponse.json({ error: "Missing required booking details." }, { status: 400 });
+    }
+
+    // Validate Anna Clinic dates (alternating Fridays only)
+    if (location.toLowerCase().includes("anna")) {
+      if (!isAlternatingFriday(date)) {
+        return NextResponse.json(
+          { error: "Anna Clinic appointments are only available on alternating Fridays (1st & 3rd Friday of each month). Please select a valid Friday." },
+          { status: 400 }
+        );
+      }
     }
 
     // Generate new OTP
