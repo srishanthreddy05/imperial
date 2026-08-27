@@ -120,7 +120,11 @@ export default function FormsPage() {
               <div className="bg-[#F8F9FA] p-5 rounded-xl border border-gray-100 space-y-1.5">
                 <span className="font-bold text-gray-900 block font-montserrat">Option B: Email or Fax</span>
                 <p className="leading-relaxed font-sans text-gray-600 text-xs">
-                  Email scanned copies to our patient care desk or fax directly to <strong className="text-gray-800">(903) 355-2938</strong>.
+                  Email scanned copies to{" "}
+                  <a href="mailto:imperial_care@yahoo.com" className="text-[#005EB8] font-bold underline hover:text-[#004B93]">
+                    imperial_care@yahoo.com
+                  </a>{" "}
+                  or fax directly to <strong className="text-gray-800">(903) 355-2938</strong>.
                 </p>
               </div>
             </div>

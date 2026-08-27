@@ -32,49 +32,83 @@ export default function AboutPage() {
       credentials: ["MD Degree", "Adult Wellness & Chronic Disease Specialist"],
     },
     {
-      name: "Tiffany",
-      title: "Nurse",
-      badge: "Nurse",
-      initials: "T",
+      name: "Carla",
+      title: "FNP",
+      badge: "FNP",
+      image: "/ICIM Photos/ICIM - Staff/CARLA FOWLER - FNP.jpeg",
+      initials: "C",
       color: "bg-[#005EB8]",
-      bio: "Tiffany provides dedicated clinical nursing support, patient evaluations, and compassionate care alongside Dr. Islam.",
-      credentials: ["Nurse", "Clinical Nursing Support", "Patient Care"],
+      bio: "Family Nurse Practitioner delivering compassionate, comprehensive clinical care alongside Dr. Islam.",
+      credentials: ["Family Nurse Practitioner (FNP)", "Clinical Evaluations", "Patient Care"],
     },
     {
-      name: "Makinzie",
+      name: "Kelly",
+      title: "Receptionist",
+      badge: "Receptionist",
+      image: "/ICIM Photos/ICIM - Staff/KELLY - FRONT DESK RECEPTIONIST.jpeg",
+      initials: "K",
+      color: "bg-teal-600",
+      bio: "Kelly greets every patient with warmth and ensures seamless intake, appointment scheduling, and front-desk support.",
+      credentials: ["Patient Reception", "Intake Coordination", "Front Desk Scheduling"],
+    },
+    {
+      name: "Lesa",
+      title: "Manager",
+      badge: "Manager",
+      image: "/ICIM Photos/ICIM - Staff/LESA - LVN OFFICE MANAGER.jpeg",
+      initials: "L",
+      color: "bg-gray-800",
+      bio: "Lesa oversees practice administration, office workflow efficiency, and clinical coordination.",
+      credentials: ["Practice Management", "Care Administration", "Operations Coordination"],
+    },
+    {
+      name: "Tiffany",
+      title: "Manager",
+      badge: "Manager",
+      image: "/ICIM Photos/ICIM - Staff/TIFFANY - LVN MANAGER.jpeg",
+      initials: "T",
+      color: "bg-[#005EB8]",
+      bio: "Tiffany oversees clinic operations and ensures compassionate, patient-centered care and clinical workflow.",
+      credentials: ["Clinical Management", "Practice Leadership", "Patient Care Support"],
+    },
+    {
+      name: "Peggy",
+      title: "LVN",
+      badge: "LVN",
+      image: "/ICIM Photos/ICIM - Staff/PEGGY - LVN.jpeg",
+      initials: "P",
+      color: "bg-[#FF6B6B]",
+      bio: "Peggy brings compassionate clinical support to patient assessments, vital monitoring, and assisting Dr. Islam.",
+      credentials: ["Licensed Vocational Nurse (LVN)", "Clinical Support", "Injection Administration"],
+    },
+    {
+      name: "Gaby",
+      title: "MA",
+      badge: "MA",
+      image: "/ICIM Photos/ICIM - Staff/Gabi - MA.jpeg",
+      initials: "G",
+      color: "bg-emerald-600",
+      bio: "Gaby serves as Medical Assistant, assisting with patient intake, vitals, clinical prep, and day-to-day patient support.",
+      credentials: ["Medical Assistant (MA)", "Patient Intake & Vitals", "Clinical Support"],
+    },
+    {
+      name: "Makenzie",
       title: "MA",
       badge: "MA",
       initials: "M",
       color: "bg-[#00A9CE]",
-      bio: "Makinzie serves as Medical Assistant, assisting with patient intake, vitals, clinical prep, and day-to-day patient support.",
-      credentials: ["MA", "Medical Assistant", "Clinical Intake & Vitals"],
+      bio: "Makenzie serves as Medical Assistant, assisting with patient intake, vitals, clinical prep, and day-to-day patient support.",
+      credentials: ["Medical Assistant (MA)", "Patient Intake & Vitals", "Clinical Prep"],
     },
     {
-      name: "Kelly",
-      title: "Front Desk & Patient Relations Specialist",
-      badge: "Front Desk",
-      initials: "K",
-      color: "bg-teal-600",
-      bio: "Kelly greets every patient with warmth and ensures seamless intake, appointment scheduling, and front-desk support at our clinic locations.",
-      credentials: ["Patient Scheduling", "Intake Coordination", "Insurance Verification"],
-    },
-    {
-      name: "Peggy, LVN",
-      title: "Licensed Vocational Nurse",
-      badge: "Clinical Nurse",
-      initials: "PL",
-      color: "bg-[#FF6B6B]",
-      bio: "Peggy brings compassionate clinical support to patient assessments, vital monitoring, B12 injections, and assisting Dr. Islam during wellness exams.",
-      credentials: ["Licensed Vocational Nurse (LVN)", "Clinical Administration", "Injection Therapy"],
-    },
-    {
-      name: "LESA",
-      title: "Practice Manager & Care Coordinator",
-      badge: "Administration",
-      initials: "L",
-      color: "bg-gray-800",
-      bio: "LESA oversees practice administration, office workflow efficiency, patient communication, and ensuring highest standards of HIPAA compliance.",
-      credentials: ["Practice Management", "Care Coordination", "Compliance Oversight"],
+      name: "Faith",
+      title: "MA",
+      badge: "MA",
+      image: "/ICIM Photos/ICIM - Staff/FAITH - MA.jpeg",
+      initials: "F",
+      color: "bg-indigo-600",
+      bio: "Faith serves as Medical Assistant, assisting with clinical prep, vital monitoring, and patient intake.",
+      credentials: ["Medical Assistant (MA)", "Patient Care", "Clinical Assistance"],
     },
   ];
 
@@ -133,13 +167,14 @@ export default function AboutPage() {
 
             {/* Team Visual with team.png photo */}
             <div className="lg:col-span-6">
-              <div className="bg-gradient-to-br from-[#005EB8]/10 to-[#00A9CE]/20 p-8 rounded-3xl border border-gray-200 text-center space-y-6">
-                <div className="relative w-full h-[280px] rounded-2xl overflow-hidden shadow-lg border-2 border-white">
+              <div className="bg-gradient-to-br from-[#005EB8]/10 to-[#00A9CE]/20 p-6 sm:p-8 rounded-3xl border border-gray-200 text-center space-y-6">
+                <div className="relative w-full aspect-[4/3.8] sm:aspect-square max-w-md mx-auto rounded-2xl overflow-hidden shadow-lg border-2 border-white bg-white">
                   <Image
                     src="/team.png"
                     alt="Dr. Sumbul Islam, MD & Clinical Staff"
                     fill
-                    className="object-cover object-center"
+                    className="object-cover object-top"
+                    priority
                   />
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900">Dr. Sumbul Islam, MD & Clinical Staff</h3>
@@ -151,19 +186,28 @@ export default function AboutPage() {
                     Dr. Sumbul Islam, MD
                   </span>
                   <span className="bg-white text-gray-800 text-xs font-semibold px-3 py-1 rounded-full border border-gray-200">
-                    Tiffany (Nurse)
+                    Carla (FNP)
                   </span>
                   <span className="bg-white text-gray-800 text-xs font-semibold px-3 py-1 rounded-full border border-gray-200">
-                    Makinzie (MA)
+                    Kelly (Receptionist)
                   </span>
                   <span className="bg-white text-gray-800 text-xs font-semibold px-3 py-1 rounded-full border border-gray-200">
-                    Kelly (Front Desk)
+                    Lesa (Manager)
                   </span>
                   <span className="bg-white text-gray-800 text-xs font-semibold px-3 py-1 rounded-full border border-gray-200">
-                    Peggy, LVN
+                    Tiffany (Manager)
                   </span>
                   <span className="bg-white text-gray-800 text-xs font-semibold px-3 py-1 rounded-full border border-gray-200">
-                    LESA (Care Admin)
+                    Peggy (LVN)
+                  </span>
+                  <span className="bg-white text-gray-800 text-xs font-semibold px-3 py-1 rounded-full border border-gray-200">
+                    Gaby (MA)
+                  </span>
+                  <span className="bg-white text-gray-800 text-xs font-semibold px-3 py-1 rounded-full border border-gray-200">
+                    Makenzie (MA)
+                  </span>
+                  <span className="bg-white text-gray-800 text-xs font-semibold px-3 py-1 rounded-full border border-gray-200">
+                    Faith (MA)
                   </span>
                 </div>
               </div>
@@ -299,9 +343,12 @@ export default function AboutPage() {
               <div className="w-10 h-10 rounded-xl bg-[#FF6B6B] text-white flex items-center justify-center font-bold mb-3">
                 <Calendar className="w-5 h-5" />
               </div>
-              <h3 className="font-bold text-gray-900 text-base">Accepting New Patients</h3>
+              <h3 className="font-bold text-gray-900 text-base">New Patient Requests</h3>
               <p className="text-xs text-gray-600 leading-relaxed">
-                Same-week appointment availability for new adult patient consultations and routine physicals.
+                For new patient requests and details, please text{" "}
+                <a href="tel:9039570417" className="text-[#005EB8] font-bold underline hover:text-[#004B93]">
+                  903-957-0417
+                </a>.
               </p>
             </div>
           </div>

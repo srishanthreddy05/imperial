@@ -62,6 +62,13 @@ const jsonLdSchema = {
   "medicalSpecialty": "PrimaryCare",
   "telephone": "(903) 957-0417",
   "faxNumber": "(903) 355-2938",
+  "email": "imperial_care@yahoo.com",
+  "sameAs": [
+    "https://www.facebook.com/share/19Uhr49fEk/",
+    "https://www.instagram.com/Imperialcareinternalmedicine/",
+    "https://www.linkedin.com/company/imperialcareinternalmedicine",
+    "https://x.com/internal88443"
+  ],
   "founder": {
     "@type": "Person",
     "name": "Dr. Sumbul Islam, MD",

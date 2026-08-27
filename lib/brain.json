@@ -5,6 +5,7 @@
     "specialty": "Internal Medicine & Primary Care",
     "phone": "(903) 957-0417",
     "fax": "(903) 355-2938",
+    "email": "imperial_care@yahoo.com",
     "tagline": "Personalized, Evidence-Based Care for Your Health"
   },
   "locations": [
@@ -43,11 +44,14 @@
   ],
   "staff": [
     { "name": "Dr. Sumbul Islam, MD", "role": "Internal Medicine Physician" },
-    { "name": "Tiffany", "role": "Nurse" },
-    { "name": "Makinzie", "role": "MA" },
-    { "name": "Kelly", "role": "Front Desk & Patient Relations" },
-    { "name": "Peggy, LVN", "role": "Licensed Vocational Nurse" },
-    { "name": "LESA", "role": "Practice Manager / Care Administrator" }
+    { "name": "Carla", "role": "FNP" },
+    { "name": "Kelly", "role": "Receptionist" },
+    { "name": "Lesa", "role": "Manager" },
+    { "name": "Tiffany", "role": "Manager" },
+    { "name": "Peggy", "role": "LVN" },
+    { "name": "Gaby", "role": "MA" },
+    { "name": "Makenzie", "role": "MA" },
+    { "name": "Faith", "role": "MA" }
   ],
   "forms": [
     { "name": "Semaglutide — Weight Loss Tracker", "type": "PDF" },

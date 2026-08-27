@@ -72,7 +72,9 @@ export default function Footer() {
 
               {/* LinkedIn */}
               <a
-                href="#linkedin"
+                href="https://www.linkedin.com/company/imperialcareinternalmedicine"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-9 h-9 rounded-full bg-gray-800 hover:bg-[#005EB8] text-gray-400 hover:text-white flex items-center justify-center transition-colors"
                 aria-label="LinkedIn"
               >
@@ -152,6 +154,17 @@ export default function Footer() {
             </h3>
 
             <div className="space-y-4 text-sm">
+              {/* New Patient Requests */}
+              <div className="bg-[#005EB8]/20 border border-[#005EB8]/40 p-2.5 rounded-lg text-xs space-y-1">
+                <span className="block font-bold text-[#00A9CE] uppercase tracking-wider">New Patient Requests</span>
+                <p className="text-gray-300">
+                  For new patient requests and details, please text{" "}
+                  <a href="tel:9039570417" className="text-white font-bold underline hover:text-[#00A9CE]">
+                    (903) 957-0417
+                  </a>.
+                </p>
+              </div>
+
               <div className="flex items-start space-x-3">
                 <Phone className="w-4 h-4 text-[#FF6B6B] shrink-0 mt-0.5" />
                 <div>
@@ -163,7 +176,15 @@ export default function Footer() {
                 </div>
               </div>
 
-
+              <div className="flex items-start space-x-3">
+                <Mail className="w-4 h-4 text-[#00A9CE] shrink-0 mt-0.5" />
+                <div>
+                  <span className="block font-semibold text-white">Clinic Email</span>
+                  <a href="mailto:imperial_care@yahoo.com" className="hover:text-[#00A9CE] break-all">
+                    imperial_care@yahoo.com
+                  </a>
+                </div>
+              </div>
 
               <div className="flex items-start space-x-3">
                 <MapPin className="w-4 h-4 text-[#00A9CE] shrink-0 mt-0.5" />

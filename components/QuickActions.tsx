@@ -85,15 +85,15 @@ export default function QuickActions() {
 
             {/* Card 2: Send an SMS */}
             <a 
-              href={`sms:${phoneNumber}?body=${encodeURIComponent('Hello, I would like to schedule an appointment.')}`}
+              href={`sms:${phoneNumber}?body=${encodeURIComponent('Hello, I would like information regarding new patient requests.')}`}
               className="w-full text-left p-4 rounded-xl border border-gray-100 hover:border-blue-100 hover:bg-blue-50/20 transition-all duration-200 flex items-start gap-3 cursor-pointer group"
             >
               <div className="w-10 h-10 rounded-full bg-violet-50 flex items-center justify-center text-violet-600 shrink-0 group-hover:scale-105 transition-transform">
                 <Smartphone size={20} />
               </div>
               <div>
-                <h4 className="font-semibold text-gray-900 text-sm group-hover:text-[#005EB8] transition-colors">📱 Send an SMS</h4>
-                <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">Text our office directly.</p>
+                <h4 className="font-semibold text-gray-900 text-sm group-hover:text-[#005EB8] transition-colors">📱 Text 903-957-0417</h4>
+                <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">For new patient requests and details.</p>
               </div>
             </a>
           </div>

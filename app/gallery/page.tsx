@@ -12,16 +12,16 @@ interface GalleryImage {
 }
 
 const staffImages: GalleryImage[] = [
-  { src: "/ICIM Photos/ICIM - Staff/CARLA FOWLER - FNP.jpeg", title: "Carla Fowler, FNP" },
-  { src: "/ICIM Photos/ICIM - Staff/Dr. Islam 1.jpeg", title: "Dr. Islam" },
-  { src: "/ICIM Photos/ICIM - Staff/Dr. Islam 2.jpeg", title: "Dr. Islam" },
-  { src: "/ICIM Photos/ICIM - Staff/Dr. Islam 3.jpeg", title: "Dr. Islam" },
+  { src: "/ICIM Photos/ICIM - Staff/CARLA FOWLER - FNP.jpeg", title: "Carla, FNP" },
+  { src: "/ICIM Photos/ICIM - Staff/Dr. Islam 1.jpeg", title: "Dr. Sumbul Islam, MD" },
+  { src: "/ICIM Photos/ICIM - Staff/Dr. Islam 2.jpeg", title: "Dr. Sumbul Islam, MD" },
+  { src: "/ICIM Photos/ICIM - Staff/Dr. Islam 3.jpeg", title: "Dr. Sumbul Islam, MD" },
   { src: "/ICIM Photos/ICIM - Staff/FAITH - MA.jpeg", title: "Faith, MA" },
-  { src: "/ICIM Photos/ICIM - Staff/Gabi - MA.jpeg", title: "Gabi, MA" },
-  { src: "/ICIM Photos/ICIM - Staff/KELLY - FRONT DESK RECEPTIONIST.jpeg", title: "Kelly, Front Desk Receptionist" },
-  { src: "/ICIM Photos/ICIM - Staff/LESA - LVN OFFICE MANAGER.jpeg", title: "Lesa, LVN Office Manager" },
+  { src: "/ICIM Photos/ICIM - Staff/Gabi - MA.jpeg", title: "Gaby, MA" },
+  { src: "/ICIM Photos/ICIM - Staff/KELLY - FRONT DESK RECEPTIONIST.jpeg", title: "Kelly, Receptionist" },
+  { src: "/ICIM Photos/ICIM - Staff/LESA - LVN OFFICE MANAGER.jpeg", title: "Lesa, Manager" },
   { src: "/ICIM Photos/ICIM - Staff/PEGGY - LVN.jpeg", title: "Peggy, LVN" },
-  { src: "/ICIM Photos/ICIM - Staff/TIFFANY - LVN MANAGER.jpeg", title: "Tiffany, Nurse" },
+  { src: "/ICIM Photos/ICIM - Staff/TIFFANY - LVN MANAGER.jpeg", title: "Tiffany, Manager" },
 ];
 
 const clinicImages: GalleryImage[] = [

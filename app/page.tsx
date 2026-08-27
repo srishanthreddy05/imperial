@@ -54,6 +54,19 @@ export default function HomePage() {
                 Personalized primary care and internal medicine for adults in Collin & Grayson Counties. Experience evidence-based medical care tailored specifically to your unique wellness goals.
               </p>
 
+              {/* New Patient Callout Banner */}
+              <div className="p-3.5 bg-white/90 border border-[#005EB8]/20 rounded-2xl shadow-xs max-w-xl text-xs sm:text-sm space-y-1">
+                <span className="font-bold text-[#005EB8] block uppercase tracking-wider text-[11px]">
+                  New Patient Requests
+                </span>
+                <p className="text-gray-700">
+                  For new patient requests and details, please text{" "}
+                  <a href="tel:9039570417" className="font-bold text-[#005EB8] underline hover:text-[#004B93]">
+                    903-957-0417
+                  </a>.
+                </p>
+              </div>
+
               {/* Action CTAs */}
               <div className="flex flex-col sm:flex-row gap-4 pt-1">
                 <button
@@ -128,7 +141,7 @@ export default function HomePage() {
                       src="/team.png"
                       alt="Imperial Care Clinical Team — Dr. Sumbul Islam, MD & Staff"
                       fill
-                      className="object-cover object-center"
+                      className="object-cover object-top"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent flex flex-col justify-end p-6 text-white">
                       <span className="text-xs font-bold uppercase tracking-wider text-[#00A9CE]">
@@ -416,12 +429,24 @@ export default function HomePage() {
                   </div>
                   <div className="flex items-center gap-2.5">
                     <Phone className="w-4 h-4 text-[#005EB8] shrink-0" />
-                    <span>Phone: (903) 957-0417 | Fax: (903) 355-2938</span>
+                    <span>
+                      Phone:{" "}
+                      <a href="tel:9039570417" className="font-semibold text-gray-900 hover:text-[#005EB8]">
+                        (903) 957-0417
+                      </a>{" "}
+                      | Fax: (903) 355-2938
+                    </span>
                   </div>
                   <div className="flex items-center gap-2.5">
                     <Clock className="w-4 h-4 text-[#005EB8] shrink-0" />
                     <span>By appointment only — alternating Fridays</span>
                   </div>
+                  <p className="text-xs text-[#005EB8] font-medium pt-1">
+                    For new patient requests and details, please text{" "}
+                    <a href="tel:9039570417" className="font-bold underline">
+                      903-957-0417
+                    </a>.
+                  </p>
                 </div>
               </div>
 
@@ -458,12 +483,24 @@ export default function HomePage() {
                   </div>
                   <div className="flex items-center gap-2.5">
                     <Phone className="w-4 h-4 text-[#005EB8] shrink-0" />
-                    <span>Phone: (903) 957-0417 | Fax: (903) 355-2938</span>
+                    <span>
+                      Phone:{" "}
+                      <a href="tel:9039570417" className="font-semibold text-gray-900 hover:text-[#005EB8]">
+                        (903) 957-0417
+                      </a>{" "}
+                      | Fax: (903) 355-2938
+                    </span>
                   </div>
                   <div className="flex items-center gap-2.5">
                     <Clock className="w-4 h-4 text-[#005EB8] shrink-0" />
                     <span>Mon–Thu: 8:00 AM – 5:00 PM</span>
                   </div>
+                  <p className="text-xs text-[#005EB8] font-medium pt-1">
+                    For new patient requests and details, please text{" "}
+                    <a href="tel:9039570417" className="font-bold underline">
+                      903-957-0417
+                    </a>.
+                  </p>
                 </div>
               </div>
 

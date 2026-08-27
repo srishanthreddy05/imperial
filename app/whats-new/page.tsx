@@ -563,9 +563,15 @@ export default function WhatsNewPage() {
                     href="tel:9039570417"
                     className="inline-flex w-full items-center justify-center rounded-full border border-white/25 bg-white/10 px-6 py-3 text-sm font-semibold text-white backdrop-blur-sm transition-transform hover:scale-[1.02] hover:bg-white/15 sm:w-auto"
                   >
-                    Call (903) 957-0417
+                    Text / Call (903) 957-0417
                   </a>
                 </div>
+                <p className="text-xs text-white/80 pt-1">
+                  New Patient Requests: For new patient requests and details, please text{" "}
+                  <a href="tel:9039570417" className="underline font-bold text-white">
+                    903-957-0417
+                  </a>.
+                </p>
               </div>
 
               <Card className="border-white/15 bg-white/12 p-5 text-white shadow-none backdrop-blur-xl">

@@ -387,6 +387,19 @@ export default function AppointmentModal({ isOpen, onClose }: AppointmentModalPr
 
           {step === "form" ? (
             <form onSubmit={handleSubmit} className="p-6 space-y-5">
+              {/* New Patient Notice */}
+              <div className="bg-[#005EB8]/10 border border-[#005EB8]/25 p-3.5 rounded-xl text-xs text-gray-800 space-y-1">
+                <span className="font-bold text-[#005EB8] block uppercase tracking-wider text-[11px]">
+                  New Patient Requests
+                </span>
+                <p className="leading-relaxed">
+                  For new patient requests and details, please text{" "}
+                  <a href="tel:9039570417" className="font-bold text-[#005EB8] underline hover:text-[#004B93]">
+                    903-957-0417
+                  </a>.
+                </p>
+              </div>
+
               {/* Error display */}
               {error && (
                 <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl text-sm flex items-center gap-2 font-sans animate-in shake duration-200">

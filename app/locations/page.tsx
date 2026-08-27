@@ -6,6 +6,7 @@ import {
   MapPin,
   Phone,
   Printer,
+  Mail,
   Clock,
   Calendar,
   ExternalLink,
@@ -65,6 +66,16 @@ export default function LocationsPage() {
                   <p className="text-xs text-[#005EB8] mt-1 font-semibold">By appointment only — alternating Fridays</p>
                 </div>
 
+                <div className="p-3 bg-[#005EB8]/10 border border-[#005EB8]/20 rounded-xl text-xs space-y-0.5">
+                  <strong className="block font-bold text-[#005EB8] uppercase tracking-wider">New Patient Requests</strong>
+                  <p className="text-gray-700">
+                    For new patient requests and details, please text{" "}
+                    <a href="tel:9039570417" className="text-[#005EB8] font-bold underline hover:text-[#004B93]">
+                      903-957-0417
+                    </a>.
+                  </p>
+                </div>
+
                 <div className="space-y-3 text-sm text-gray-700 bg-white p-5 rounded-2xl border border-gray-200">
                   <div className="flex items-start gap-3">
                     <MapPin className="w-5 h-5 text-[#005EB8] shrink-0 mt-0.5" />
@@ -80,6 +91,16 @@ export default function LocationsPage() {
                       <strong className="text-gray-900 font-semibold">Phone:</strong>{" "}
                       <a href="tel:9039570417" className="hover:text-[#005EB8] font-bold">
                         (903) 957-0417
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <Mail className="w-5 h-5 text-[#005EB8] shrink-0" />
+                    <div>
+                      <strong className="text-gray-900 font-semibold">Email:</strong>{" "}
+                      <a href="mailto:imperial_care@yahoo.com" className="hover:text-[#005EB8] font-bold">
+                        imperial_care@yahoo.com
                       </a>
                     </div>
                   </div>
@@ -138,6 +159,16 @@ export default function LocationsPage() {
                   <p className="text-xs text-gray-500 mt-1 font-medium">Monday–Friday Care</p>
                 </div>
 
+                <div className="p-3 bg-[#00A9CE]/10 border border-[#00A9CE]/20 rounded-xl text-xs space-y-0.5">
+                  <strong className="block font-bold text-[#005EB8] uppercase tracking-wider">New Patient Requests</strong>
+                  <p className="text-gray-700">
+                    For new patient requests and details, please text{" "}
+                    <a href="tel:9039570417" className="text-[#005EB8] font-bold underline hover:text-[#004B93]">
+                      903-957-0417
+                    </a>.
+                  </p>
+                </div>
+
                 <div className="space-y-3 text-sm text-gray-700 bg-white p-5 rounded-2xl border border-gray-200">
                   <div className="flex items-start gap-3">
                     <MapPin className="w-5 h-5 text-[#005EB8] shrink-0 mt-0.5" />
@@ -153,6 +184,16 @@ export default function LocationsPage() {
                       <strong className="text-gray-900 font-semibold">Phone:</strong>{" "}
                       <a href="tel:9039570417" className="hover:text-[#005EB8] font-bold">
                         (903) 957-0417
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <Mail className="w-5 h-5 text-[#005EB8] shrink-0" />
+                    <div>
+                      <strong className="text-gray-900 font-semibold">Email:</strong>{" "}
+                      <a href="mailto:imperial_care@yahoo.com" className="hover:text-[#005EB8] font-bold">
+                        imperial_care@yahoo.com
                       </a>
                     </div>
                   </div>

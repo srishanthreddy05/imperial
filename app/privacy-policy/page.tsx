@@ -90,6 +90,7 @@ export default function PrivacyPolicyPage() {
             <p className="text-xs">
               If you have questions regarding this Privacy Policy, please contact:<br />
               <strong>Imperial Care Internal Medicine</strong><br />
+              Email: <a href="mailto:imperial_care@yahoo.com" className="text-[#005EB8] font-bold underline hover:text-[#004B93]">imperial_care@yahoo.com</a><br />
               Phone: (903) 957-0417 | Fax: (903) 355-2938<br />
               Anna Clinic: 450 N Standridge Blvd, Suite 104, Anna, TX 75409<br />
               Sherman Clinic: 1700 N Travis St, Sherman, TX 75092

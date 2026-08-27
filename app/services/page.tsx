@@ -390,14 +390,26 @@ export default function ServicesPage() {
           <p className="text-base text-white/90 max-w-2xl mx-auto leading-relaxed">
             Visiting us at our Anna or Sherman office ensures complete medical evaluations, accurate blood pressure readings, and direct face-to-face consultation with Dr. Sumbul Islam.
           </p>
-          <div className="pt-2">
+          <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
             <button
               onClick={() => setIsModalOpen(true)}
               className="bg-white text-[#005EB8] hover:bg-gray-100 font-bold px-8 py-3 rounded-xl text-sm shadow-md"
             >
               Schedule Your Visit Today
             </button>
+            <a
+              href="tel:9039570417"
+              className="bg-white/10 hover:bg-white/20 text-white font-bold px-6 py-3 rounded-xl text-sm border border-white/30"
+            >
+              Text/Call (903) 957-0417
+            </a>
           </div>
+          <p className="text-xs text-white/80 pt-1">
+            New Patient Requests: For new patient requests and details, please text{" "}
+            <a href="tel:9039570417" className="underline font-bold text-white">
+              903-957-0417
+            </a>.
+          </p>
         </div>
       </section>
 
